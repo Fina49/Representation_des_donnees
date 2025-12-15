@@ -1,0 +1,136 @@
+@prefix : <http://www.semanticweb.org/photoalbum#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+
+### Albums
+
+:album1 rdf:type :Album ;
+    :albumName "Vacances d'été 2021" ;
+    :ownedBy :manuelAtencia ;
+    rdfs:label "Album vacances été 2021" .
+
+:album2 rdf:type :Album ;
+    :albumName "Événements de famille" ;
+    :ownedBy :marieMartin ;
+    rdfs:label "Album famille" .
+
+:album3 rdf:type :Album ;
+    :albumName "Grenoble et environs" ;
+    :ownedBy :philippeGenoud ;
+    rdfs:label "Album Grenoble" .
+
+:album4 rdf:type :Album ;
+    :albumName "Paris 2022" ;
+    :ownedBy :lucDupont ;
+    rdfs:label "Album Paris" .
+
+
+### Photos - Album 1 (Vacances)
+
+:photo001 rdf:type :Photo ;
+    :title "La Tour Eiffel au coucher du soleil" ;
+    :description "Belle vue de la Tour Eiffel depuis le Trocadéro" ;
+    :dateTaken "2021-08-15T18:30:00"^^xsd:dateTime ;
+    :yearTaken "2021"^^xsd:gYear ;
+    :takenBy :manuelAtencia ;
+    :takenAt :eiffelTower ;
+    :depictsObject :eiffelTower ;
+    :depictsPerson :manuelAtencia , :philippeGenoud ;
+    :inAlbum :album1 ;
+    :hasPhotoType :LandscapePhoto ;
+    rdfs:label "Photo Tour Eiffel" .
+
+
+
+
+### Photos - Album 2 (Événements famille)
+
+:photo005 rdf:type :Photo ;
+    :title "Anniversaire de Marie" ;
+    :description "Fête d'anniversaire avec la famille" ;
+    :dateTaken "2024-03-12T19:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :lucDupont ;
+    :takenAt :grenoble ;
+    :depictsPerson :marieMartin , :lucDupont , :manuelAtencia ;
+    :takenDuring :birthday2024 ;
+    :inAlbum :album2 ;
+    :hasPhotoType :FamilyPhoto ;
+    rdfs:label "Photo anniversaire Marie" .
+
+
+
+
+### Photos - Album 3 (Grenoble)
+
+:photo008 rdf:type :Photo ;
+    :title "Vue de Grenoble" ;
+    :description "Panorama de la ville depuis la Bastille" ;
+    :dateTaken "2023-06-15T17:00:00"^^xsd:dateTime ;
+    :yearTaken "2023"^^xsd:gYear ;
+    :takenBy :philippeGenoud ;
+    :takenAt :grenoble ;
+    :inAlbum :album3 ;
+    :hasPhotoType :LandscapePhoto ;
+    rdfs:label "Vue Grenoble" .
+
+:photo009 rdf:type :Photo ;
+    :title "Philippe et Manuel à Grenoble" ;
+    :description "Promenade dans le centre-ville" ;
+    :dateTaken "2023-10-08T14:30:00"^^xsd:dateTime ;
+    :yearTaken "2023"^^xsd:gYear ;
+    :takenBy :jeromeGensel ;
+    :takenAt :grenoble ;
+    :depictsPerson :philippeGenoud , :manuelAtencia ;
+    :inAlbum :album3 ;
+    :hasPhotoType :PortraitPhoto ;
+    rdfs:label "Photo Philippe et Manuel" .
+
+
+### Photos - Album 4 (Paris)
+
+:photo010 rdf:type :Photo ;
+    :title "Tour Eiffel de nuit" ;
+    :description "La Tour Eiffel illuminée" ;
+    :dateTaken "2022-12-25T21:00:00"^^xsd:dateTime ;
+    :yearTaken "2022"^^xsd:gYear ;
+    :takenBy :lucDupont ;
+    :takenAt :eiffelTower ;
+    :depictsObject :eiffelTower ;
+    :inAlbum :album4 ;
+    :hasPhotoType :LandscapePhoto ;
+    rdfs:label "Tour Eiffel nuit" .
+
+
+
+
+### Photos avec périodes spécifiques
+
+:photo014 rdf:type :Photo ;
+    :title "Vacances de Noël" ;
+    :description "Sapin de Noël à Paris" ;
+    :dateTaken "2022-12-24T19:00:00"^^xsd:dateTime ;
+    :yearTaken "2022"^^xsd:gYear ;
+    :takenBy :lucDupont ;
+    :takenAt :paris ;
+    :depictsPerson :lucDupont , :marieMartin ;
+    :inAlbum :album4 ;
+    :hasPhotoType :FamilyPhoto ;
+    rdfs:label "Photo Noël" .
+
+:photo015 rdf:type :Photo ;
+    :title "Amis à Grenoble" ;
+    :description "Manuel, Philippe et Jérôme ensemble" ;
+    :dateTaken "2023-09-20T19:00:00"^^xsd:dateTime ;
+    :yearTaken "2023"^^xsd:gYear ;
+    :takenBy :marieMartin ;
+    :takenAt :grenoble ;
+    :depictsPerson :manuelAtencia , :philippeGenoud , :jeromeGensel ;
+    :takenDuring :housewarming2023 ;
+    :inAlbum :album3 ;
+    :hasPhotoType :FamilyPhoto ;
+    rdfs:label "Photo amis" .

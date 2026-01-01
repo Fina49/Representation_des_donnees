@@ -8,222 +8,224 @@
 @prefix dc: <http://purl.org/dc/elements/1.1/> .               # Dublin Core simple [web:7]
 @prefix dcterms: <http://purl.org/dc/terms/> .                 # Dublin Core Terms [web:7]
 @prefix schema: <http://schema.org/> .                         # Vocabulaire Schema.org (ex. ImageObject) [web:4]
-@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .      # Vocabulaire WGS84 pour coordonnées [web:13]
 @base <http://www.semanticweb.org/photoalbum> .                # IRI de base de l’ontologie
 
 # Déclaration de l’ontologie avec métadonnées Dublin Core
 <http://www.semanticweb.org/photoalbum> rdf:type owl:Ontology ;
     dc:creator "Beyeler Elie , Luginbuhl Valentin" ;
     dc:title "Photo Album Ontology" ;
-    rdfs:comment "Ontologie pour la description et l'annotation de photos dans un album photo sémantique" .
+    rdfs:comment "Ontologie dans le cadre du projet de représentation de données et connaissances contenant la description et l'annotation de photos dans un album photo" .
 
-#################################################################
 #    Classes
-#################################################################
 
 ### Classes principales
+# Les classes de base qui structurent l'ontologie
 
-# Classe principale représentant une photo dans l’album
+# Photo: représente une image dans notre système
 :Photo rdf:type owl:Class ;
-    rdfs:label "Photo"@fr , "Photo"@en ;
-    rdfs:comment "Une image photographique dans un album"@fr .
+    rdfs:label "Photo" ;
+    rdfs:comment "Une  photo dans un album" ;
 
-# Classe pour regrouper des photos dans un album
+# Album: conteneur logique pour regrouper des photos
 :Album rdf:type owl:Class ;
-    rdfs:label "Album"@fr , "Album"@en ;
-    rdfs:comment "Un album regroupant des photos"@fr .
+    rdfs:label "Album";
+    rdfs:comment "Un album regroupant des photos" ;
 
-# Personne, spécialisée comme sous-classe de foaf:Person
+# Person: réutilise FOAF pour la compatibilité avec d'autres ontologies
 :Person rdf:type owl:Class ;
     rdfs:subClassOf foaf:Person ;
-    rdfs:label "Personne"@fr , "Person"@en ;
-    rdfs:comment "Une personne apparaissant sur une photo ou auteur d'une photo"@fr .
+    rdfs:label "Personne" ;
+    rdfs:comment "Une personne apparaissant sur une photo ou auteur d'une photo" ;
 
-# Lieu géographique où une photo a été prise
+# Place: lieu géographique avec coordonnées possibles
 :Place rdf:type owl:Class ;
-    rdfs:label "Lieu"@fr , "Place"@en ;
-    rdfs:comment "Un lieu géographique où une photo a été prise"@fr .
+    rdfs:label "Lieu" ;
+    rdfs:comment "Un lieu géographique où une photo a été prise" ;
 
-# Événement capturé par une ou plusieurs photos
+# Event: permet de regrouper des photos par contexte (fête, vacances, etc.)
 :Event rdf:type owl:Class ;
-    rdfs:label "Événement"@fr , "Event"@en ;
-    rdfs:comment "Un événement capturé par une photo"@fr .
+    rdfs:label "Événement";
+    rdfs:comment "Un événement capturé par une photo" ;
 
 ### Hiérarchie des événements
+# Différents types d'événements pour catégoriser les photos
 
 # Fête, sous-classe d’Event
 :Party rdf:type owl:Class ;
     rdfs:subClassOf :Event ;
-    rdfs:label "Fête"@fr , "Party"@en ;
-    rdfs:comment "Un événement festif"@fr .
+    rdfs:label "Fête" ;
+    rdfs:comment "Un événement festif" .
 
 # Anniversaire, sous-classe de Party
 :Birthday rdf:type owl:Class ;
     rdfs:subClassOf :Party ;
-    rdfs:label "Anniversaire"@fr , "Birthday"@en ;
-    rdfs:comment "Une fête d'anniversaire"@fr .
+    rdfs:label "Anniversaire" ;
+    rdfs:comment "Une fête d'anniversaire" .
 
 # Pendaison de crémaillère, sous-classe de Party
 :HousewarmingParty rdf:type owl:Class ;
     rdfs:subClassOf :Party ;
-    rdfs:label "Pendaison de crémaillère"@fr , "Housewarming Party"@en ;
-    rdfs:comment "Une fête de pendaison de crémaillère"@fr .
+    rdfs:label "Pendaison de crémaillère";
+    rdfs:comment "Une fête de pendaison de crémaillère" .
 
 # Pot de départ, sous-classe de Party
 :FarewellParty rdf:type owl:Class ;
     rdfs:subClassOf :Party ;
-    rdfs:label "Pot de départ"@fr , "Farewell Party"@en ;
-    rdfs:comment "Une fête de départ"@fr .
+    rdfs:label "Pot de départ" ;
+    rdfs:comment "Une fête de départ" .
 
 # Mariage, type d’événement
 :Wedding rdf:type owl:Class ;
     rdfs:subClassOf :Event ;
-    rdfs:label "Mariage"@fr , "Wedding"@en ;
-    rdfs:comment "Un événement de mariage"@fr .
+    rdfs:label "Mariage" ;
+    rdfs:comment "Un événement de mariage" .
 
 # Vacances, période considérée comme un événement
 :Vacation rdf:type owl:Class ;
     rdfs:subClassOf :Event ;
-    rdfs:label "Vacances"@fr , "Vacation"@en ;
-    rdfs:comment "Période de vacances"@fr .
+    rdfs:label "Vacances" ;
+    rdfs:comment "Période de vacances" .
 
 ### Types de photos
+# Catégorisation sémantique des photos selon leur contenu ou style
 
-# Classe abstraite regroupant les catégories de photos
 :PhotoType rdf:type owl:Class ;
-    rdfs:label "Type de photo"@fr , "Photo Type"@en ;
-    rdfs:comment "Une catégorie de photo"@fr .
+    rdfs:label "Type de photo" ;
+    rdfs:comment "Une catégorie de photo" .
 
-# Photo de famille (catégorie sémantique)
 :FamilyPhoto rdf:type owl:Class ;
     rdfs:subClassOf :PhotoType ;
-    rdfs:label "Photo de famille"@fr , "Family Photo"@en .
+    rdfs:label "Photo de famille" ;
+    rdfs:comment "Photo représentant des membres d'une famille" .
 
-# Selfie (photo de soi-même)
 :Selfie rdf:type owl:Class ;
     rdfs:subClassOf :PhotoType ;
-    rdfs:label "Selfie"@fr , "Selfie"@en ;
-    rdfs:comment "Une photo prise de soi-même"@fr .
+    rdfs:label "Selfie" ;
+    rdfs:comment "Une photo prise de soi-même" ;
 
-# Photo de paysage
 :LandscapePhoto rdf:type owl:Class ;
     rdfs:subClassOf :PhotoType ;
-    rdfs:label "Photo de paysage"@fr , "Landscape Photo"@en .
+    rdfs:label "Photo de paysage" ;
+    rdfs:comment "Photo mettant en valeur un paysage naturel ou urbain" .
 
-# Photo de portrait
 :PortraitPhoto rdf:type owl:Class ;
     rdfs:subClassOf :PhotoType ;
-    rdfs:label "Photo de portrait"@fr , "Portrait Photo"@en .
+    rdfs:label "Photo de portrait" ;
+    rdfs:comment "Photo centrée sur une ou plusieurs personnes" .
 
 ### Hiérarchie des lieux
+# Organisation géographique hiérarchique: Pays > Région > Ville > Monument
+# La propriété transitive :locatedIn permet de faire des requêtes comme
+# "toutes les photos prises en France" qui incluent aussi Paris, etc.
 
-# Ville, sous-classe de Place
 :City rdf:type owl:Class ;
     rdfs:subClassOf :Place ;
-    rdfs:label "Ville"@fr , "City"@en .
+    rdfs:label "Ville" ;
+    rdfs:comment "Une ville ou localité" .
 
-# Pays, sous-classe de Place
 :Country rdf:type owl:Class ;
     rdfs:subClassOf :Place ;
-    rdfs:label "Pays"@fr , "Country"@en .
+    rdfs:label "Pays" ;
+    rdfs:comment "Un pays" .
 
-# Région, sous-classe de Place
 :Region rdf:type owl:Class ;
     rdfs:subClassOf :Place ;
-    rdfs:label "Région"@fr , "Region"@en .
+    rdfs:label "Région" ;
+    rdfs:comment "Une région administrative ou géographique" .
 
-# Monument ou lieu remarquable
 :Landmark rdf:type owl:Class ;
     rdfs:subClassOf :Place ;
-    rdfs:label "Monument"@fr , "Landmark"@en ;
-    rdfs:comment "Un monument ou lieu remarquable"@fr .
+    rdfs:label "Monument" ;
+    rdfs:comment "Un monument ou lieu remarquable" .
 
 ### Objets et éléments sur les photos
+# Permet de décrire ce qu'on voit sur les photos au-delà des personnes
 
-# Objet physique visible sur une photo
 :PhysicalObject rdf:type owl:Class ;
-    rdfs:label "Objet physique"@fr , "Physical Object"@en ;
-    rdfs:comment "Un objet visible sur une photo"@fr .
+    rdfs:label "Objet physique" ;
+    rdfs:comment "Un objet visible sur une photo" .
 
-# Bâtiment (sous-type d’objet physique)
 :Building rdf:type owl:Class ;
     rdfs:subClassOf :PhysicalObject ;
-    rdfs:label "Bâtiment"@fr , "Building"@en .
+    rdfs:label "Bâtiment" ;
+    rdfs:comment "Un bâtiment ou structure architecturale" .
 
-# Élément naturel (montagne, plage, etc.)
 :NaturalFeature rdf:type owl:Class ;
     rdfs:subClassOf :PhysicalObject ;
-    rdfs:label "Élément naturel"@fr , "Natural Feature"@en .
+    rdfs:label "Élément naturel" ;
+    rdfs:comment "Un élément naturel du paysage" .
 
 # Montagne
 :Mountain rdf:type owl:Class ;
     rdfs:subClassOf :NaturalFeature ;
-    rdfs:label "Montagne"@fr , "Mountain"@en .
+    rdfs:label "Montagne" .
 
 # Plage
 :Beach rdf:type owl:Class ;
     rdfs:subClassOf :NaturalFeature ;
-    rdfs:label "Plage"@fr , "Beach"@en .
+    rdfs:label "Plage" .
 
 # Animal visible sur une photo
 :Animal rdf:type owl:Class ;
-    rdfs:label "Animal"@fr , "Animal"@en ;
-    rdfs:comment "Un animal visible sur une photo"@fr .
+    rdfs:label "Animal" ;
+    rdfs:comment "Un animal visible sur une photo" .
 
 # Chien
 :Dog rdf:type owl:Class ;
     rdfs:subClassOf :Animal ;
-    rdfs:label "Chien"@fr , "Dog"@en .
+    rdfs:label "Chien" .
 
 # Chat
 :Cat rdf:type owl:Class ;
     rdfs:subClassOf :Animal ;
-    rdfs:label "Chat"@fr , "Cat"@en .
+    rdfs:label "Chat" .
 
 # Vache
 :Cow rdf:type owl:Class ;
     rdfs:subClassOf :Animal ;
-    rdfs:label "Vache"@fr , "Cow"@en .
+    rdfs:label "Vache".
 
 ### Périodes temporelles
 
 # Période temporelle abstraite
 :TimePeriod rdf:type owl:Class ;
-    rdfs:label "Période temporelle"@fr , "Time Period"@en .
+    rdfs:label "Période temporelle".
 
 # Saison (sous-classe de TimePeriod)
 :Season rdf:type owl:Class ;
     rdfs:subClassOf :TimePeriod ;
-    rdfs:label "Saison"@fr , "Season"@en .
+    rdfs:label "Saison" .
 
 # Été
 :Summer rdf:type owl:Class ;
     rdfs:subClassOf :Season ;
-    rdfs:label "Été"@fr , "Summer"@en .
+    rdfs:label "Été" .
 
 # Hiver
 :Winter rdf:type owl:Class ;
     rdfs:subClassOf :Season ;
-    rdfs:label "Hiver"@fr , "Winter"@en .
+    rdfs:label "Hiver" .
 
 # Printemps
 :Spring rdf:type owl:Class ;
     rdfs:subClassOf :Season ;
-    rdfs:label "Printemps"@fr , "Spring"@en .
+    rdfs:label "Printemps".
 
 # Automne
 :Autumn rdf:type owl:Class ;
     rdfs:subClassOf :Season ;
-    rdfs:label "Automne"@fr , "Autumn"@en .
+    rdfs:label "Automne" .
 
 ### Classes disjointes
+# Ces contraintes permettent au raisonneur de détecter des incohérences
+# Par exemple, si on dit qu'une instance est à la fois une Person et un Place,
+# le raisonneur détectera une erreur logique
 
-# Contraintes de disjonction pour éviter des individus typés à la fois Person, Place, Animal, etc.
 :Person owl:disjointWith :Place , :Animal , :PhysicalObject .
 :Animal owl:disjointWith :Place , :PhysicalObject .
 :Place owl:disjointWith :PhysicalObject .
 
-# Certains types de photos sont déclarés mutuellement exclusifs
+# Une photo ne peut pas être simultanément un selfie et une photo de paysage
 :FamilyPhoto owl:disjointWith :Selfie , :LandscapePhoto .
 
 
@@ -232,225 +234,586 @@
 #################################################################
 
 ### Propriétés liées aux photos
+# Ces propriétés permettent de décrire le contenu et le contexte des photos
 
-# Propriété générale indiquant ce que la photo représente
+# depicts: propriété générale dont héritent les propriétés spécialisées
 :depicts rdf:type owl:ObjectProperty ;
     rdfs:domain :Photo ;
     rdfs:range owl:Thing ;
-    rdfs:label "représente"@fr , "depicts"@en ;
-    rdfs:comment "Indique ce qui est représenté sur une photo"@fr .
+    rdfs:label "représente" ;
+    rdfs:comment "Indique ce qui est représenté sur une photo" .
 
-# Spécialisation de depicts pour les personnes
+# Propriétés spécialisées pour différents types de contenu
 :depictsPerson rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf :depicts ;
     rdfs:domain :Photo ;
     rdfs:range :Person ;
-    rdfs:label "représente personne"@fr , "depicts person"@en .
+    rdfs:label "représente personne" ;
+    rdfs:comment "Indique qu'une personne est visible sur la photo" .
 
 # Spécialisation de depicts pour les lieux
 :depictsPlace rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf :depicts ;
     rdfs:domain :Photo ;
     rdfs:range :Place ;
-    rdfs:label "représente lieu"@fr , "depicts place"@en .
+    rdfs:label "représente lieu" .
 
 # Spécialisation de depicts pour les objets physiques
 :depictsObject rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf :depicts ;
     rdfs:domain :Photo ;
     rdfs:range :PhysicalObject ;
-    rdfs:label "représente objet"@fr , "depicts object"@en .
+    rdfs:label "représente objet" .
 
 # Spécialisation de depicts pour les animaux
 :depictsAnimal rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf :depicts ;
     rdfs:domain :Photo ;
     rdfs:range :Animal ;
-    rdfs:label "représente animal"@fr , "depicts animal"@en .
+    rdfs:label "représente animal" .
 
-# Lieu où la photo a été prise
+# Où et quand la photo a été prise
 :takenAt rdf:type owl:ObjectProperty ;
     rdfs:domain :Photo ;
     rdfs:range :Place ;
-    rdfs:label "prise à"@fr , "taken at"@en ;
-    rdfs:comment "Le lieu où la photo a été prise"@fr .
+    rdfs:label "prise à" ;
+    rdfs:comment "Le lieu où la photo a été prise" .
 
-# Événement pendant lequel la photo a été prise
 :takenDuring rdf:type owl:ObjectProperty ;
     rdfs:domain :Photo ;
     rdfs:range :Event ;
-    rdfs:label "prise pendant"@fr , "taken during"@en ;
-    rdfs:comment "L'événement pendant lequel la photo a été prise"@fr .
+    rdfs:label "prise pendant" ;
+    rdfs:comment "L'événement pendant lequel la photo a été prise" .
 
-# Auteur de la photo
 :takenBy rdf:type owl:ObjectProperty ;
     rdfs:domain :Photo ;
     rdfs:range :Person ;
-    rdfs:label "prise par"@fr , "taken by"@en ;
-    rdfs:comment "L'auteur de la photo"@fr .
+    rdfs:label "prise par" ;
+    rdfs:comment "L'auteur de la photo" .
 
-# Lien vers la catégorie de la photo
+# Organisation en albums
 :hasPhotoType rdf:type owl:ObjectProperty ;
     rdfs:domain :Photo ;
     rdfs:range :PhotoType ;
-    rdfs:label "a pour type"@fr , "has photo type"@en .
+    rdfs:label "a pour type" ;
+    rdfs:comment "Catégorise une photo selon son type" .
 
-# Lien de la photo vers l’album qui la contient
 :inAlbum rdf:type owl:ObjectProperty ;
     rdfs:domain :Photo ;
     rdfs:range :Album ;
-    rdfs:label "dans l'album"@fr , "in album"@en .
+    rdfs:label "dans l'album" ;
+    rdfs:comment "Indique à quel album appartient la photo" .
 
-# Propriété inverse de inAlbum pour naviguer de l’album vers ses photos
+# Propriété inverse automatique: permet de naviguer dans les deux sens
 :containsPhoto rdf:type owl:ObjectProperty ;
     owl:inverseOf :inAlbum ;
     rdfs:domain :Album ;
     rdfs:range :Photo ;
-    rdfs:label "contient photo"@fr , "contains photo"@en .
+    rdfs:label "contient photo" ;
+    rdfs:comment "Liste les photos contenues dans l'album" .
 
 # Propriétaire de l’album
 :ownedBy rdf:type owl:ObjectProperty ;
     rdfs:domain :Album ;
     rdfs:range :Person ;
-    rdfs:label "appartient à"@fr , "owned by"@en .
+    rdfs:label "appartient à"  .
 
 ### Propriétés liées aux personnes
+# Ces propriétés permettent de modéliser les relations sociales et familiales
+# Les propriétés symétriques comme friendOf permettent l'inférence automatique:
+# si A est ami de B, alors B est ami de A
 
-# Relation d’amitié, symétrique entre deux personnes
 :friendOf rdf:type owl:ObjectProperty , owl:SymmetricProperty ;
     rdfs:domain :Person ;
     rdfs:range :Person ;
-    rdfs:label "ami de"@fr , "friend of"@en .
+    rdfs:label "ami de" ;
+    rdfs:comment "Indique une relation d'amitié entre deux personnes" .
 
-# Relation « frère de », symétrique
+# Relations familiales spécifiques
 :isBrotherOf rdf:type owl:ObjectProperty , owl:SymmetricProperty ;
     rdfs:domain :Person ;
     rdfs:range :Person ;
-    rdfs:label "est frère de"@fr , "is brother of"@en .
+    rdfs:label "est frère de" ;
+    rdfs:comment "Indique une relation fraternelle" .
 
-# Relation « sœur de », symétrique
 :isSisterOf rdf:type owl:ObjectProperty , owl:SymmetricProperty ;
     rdfs:domain :Person ;
     rdfs:range :Person ;
-    rdfs:label "est sœur de"@fr , "is sister of"@en .
+    rdfs:label "est sœur de" ;
+    rdfs:comment "Indique une relation sororale" .
 
-# Relation de fratrie, symétrique et transitive pour inférer les siblings
+# Relation générique de fratrie (symétrique + transitive)
+# La transitivité permet: si A sibling B et B sibling C, alors A sibling C
 :isSiblingOf rdf:type owl:ObjectProperty , owl:SymmetricProperty , owl:TransitiveProperty ;
     rdfs:domain :Person ;
     rdfs:range :Person ;
-    rdfs:label "est frère/sœur de"@fr , "is sibling of"@en .
+    rdfs:label "est frère/sœur de" ;
+    rdfs:comment "Indique une relation de fratrie" .
 
-# Les relations frère/soeur sont des cas particuliers de sibling
+# isBrotherOf et isSisterOf sont des spécialisations de isSiblingOf
 :isBrotherOf rdfs:subPropertyOf :isSiblingOf .
 :isSisterOf rdfs:subPropertyOf :isSiblingOf .
 
-# Relation parent → enfant
+# Relations parent-enfant (inverses l'une de l'autre)
 :isParentOf rdf:type owl:ObjectProperty ;
     rdfs:domain :Person ;
     rdfs:range :Person ;
-    rdfs:label "est parent de"@fr , "is parent of"@en .
+    rdfs:label "est parent de" ;
+    rdfs:comment "Indique qu'une personne est parent d'une autre" .
 
-# Relation inverse : enfant → parent
 :isChildOf rdf:type owl:ObjectProperty ;
     owl:inverseOf :isParentOf ;
     rdfs:domain :Person ;
     rdfs:range :Person ;
-    rdfs:label "est enfant de"@fr , "is child of"@en .
+    rdfs:label "est enfant de" ;
+    rdfs:comment "Indique qu'une personne est enfant d'une autre" .
 
 ### Propriétés liées aux lieux
+# La transitivité est cruciale ici: elle permet de dire qu'une ville en France
+# est aussi en Europe, sans avoir à le spécifier explicitement
 
-# Relation de localisation, transitive (ex. ville dans région, région dans pays)
 :locatedIn rdf:type owl:ObjectProperty , owl:TransitiveProperty ;
     rdfs:domain :Place ;
     rdfs:range :Place ;
-    rdfs:label "situé dans"@fr , "located in"@en .
+    rdfs:label "situé dans" ;
+    rdfs:comment "Indique qu'un lieu est situé dans un autre lieu" .
 
-# Inverse de locatedIn, également transitive
 :contains rdf:type owl:ObjectProperty , owl:TransitiveProperty ;
     owl:inverseOf :locatedIn ;
     rdfs:domain :Place ;
     rdfs:range :Place ;
-    rdfs:label "contient"@fr , "contains"@en .
+    rdfs:label "contient" ;
+    rdfs:comment "Indique qu'un lieu contient un autre lieu" .
 
 
 #################################################################
 #    Data Properties
 #################################################################
+# Propriétés dont les valeurs sont des types de données simples
+# (chaînes, nombres, dates, etc.)
 
-# Titre textuel de la photo
+# Informations textuelles sur les photos
 :title rdf:type owl:DatatypeProperty ;
     rdfs:domain :Photo ;
     rdfs:range xsd:string ;
-    rdfs:label "titre"@fr , "title"@en .
+    rdfs:label "titre" ;
+    rdfs:comment "Le titre de la photo" .
 
-# Description textuelle de la photo
 :description rdf:type owl:DatatypeProperty ;
     rdfs:domain :Photo ;
     rdfs:range xsd:string ;
-    rdfs:label "description"@fr , "description"@en .
+    rdfs:label "description" ;
+    rdfs:comment "Une description textuelle du contenu de la photo" .
 
-# Date/heure de prise de vue (fonctionnelle = une seule valeur par photo)
+# Informations temporelles
+# dateTaken est fonctionnelle: une photo ne peut avoir qu'une seule date de prise
 :dateTaken rdf:type owl:DatatypeProperty , owl:FunctionalProperty ;
     rdfs:domain :Photo ;
     rdfs:range xsd:dateTime ;
-    rdfs:label "date de prise"@fr , "date taken"@en .
+    rdfs:label "date de prise";
+    rdfs:comment "Date et heure exactes de la prise de vue" .
 
-# Année de prise de vue, dérivable ou utilisée pour requêtes
 :yearTaken rdf:type owl:DatatypeProperty ;
     rdfs:domain :Photo ;
     rdfs:range xsd:gYear ;
-    rdfs:label "année"@fr , "year taken"@en .
+    rdfs:label "année" ;
+    rdfs:comment "Année de la prise de vue (utile pour les filtres)" .
 
 # Nom de l’album (étiquette lisible)
 :albumName rdf:type owl:DatatypeProperty ;
     rdfs:domain :Album ;
     rdfs:range xsd:string ;
-    rdfs:label "nom de l'album"@fr , "album name"@en .
+    rdfs:label "nom de l'album" .
 
 # Nom de la personne
 :personName rdf:type owl:DatatypeProperty ;
     rdfs:domain :Person ;
     rdfs:range xsd:string ;
-    rdfs:label "nom"@fr , "name"@en .
+    rdfs:label "nom" .
 
 # Email de la personne (fonctionnel : un email dans ce modèle)
 :email rdf:type owl:DatatypeProperty , owl:FunctionalProperty ;
     rdfs:domain :Person ;
     rdfs:range xsd:string ;
-    rdfs:label "email"@fr , "email"@en .
+    rdfs:label "email" .
 
 # Nom textuel du lieu
 :placeName rdf:type owl:DatatypeProperty ;
     rdfs:domain :Place ;
     rdfs:range xsd:string ;
-    rdfs:label "nom du lieu"@fr , "place name"@en .
-
-# Coordonnées géographiques en décimal (latitude)
-:latitude rdf:type owl:DatatypeProperty ;
-    rdfs:domain :Place ;
-    rdfs:range xsd:decimal ;
-    rdfs:label "latitude"@fr , "latitude"@en .
-
-# Coordonnées géographiques en décimal (longitude)
-:longitude rdf:type owl:DatatypeProperty ;
-    rdfs:domain :Place ;
-    rdfs:range xsd:decimal ;
-    rdfs:label "longitude"@fr , "longitude"@en .
+    rdfs:label "nom du lieu" .
 
 
-#################################################################
-#    Individuals (Instances)
-#################################################################
-
-# TODO
 
 
-#################################################################
-#    Annotations et commentaires
-#################################################################
 
-# Commentaire global expliquant le but de l’ontologie
-<http://www.semanticweb.org/photoalbum> rdfs:comment
-    "Cette ontologie permet de décrire des photos dans un album sémantique.
-    Elle utilise des vocabulaires standards comme FOAF, Dublin Core et Schema.org.
-    L'ontologie supporte le raisonnement OWL pour inférer des relations." .
+
+
+#################################################
+# Individus
+#################################################
+
+
+# Individus Personnes
+
+:alice rdf:type :Person ;
+    :personName "Alice Dubois" ;
+    :email "alice.dubois@email.com" ;
+    rdfs:label "Alice Dubois" .
+
+:bob rdf:type :Person ;
+    :personName "Bob Martin" ;
+    :email "bob.martin@email.com" ;
+    rdfs:label "Bob Martin" .
+
+:claire rdf:type :Person ;
+    :personName "Claire Martin" ;
+    :email "claire.martin@email.com" ;
+    rdfs:label "Claire Martin" .
+
+:david rdf:type :Person ;
+    :personName "David Leroux" ;
+    :email "david.leroux@email.com" ;
+    rdfs:label "David Leroux" .
+
+:emma rdf:type :Person ;
+    :personName "Emma Petit" ;
+    :email "emma.petit@email.com" ;
+    rdfs:label "Emma Petit" .
+
+:francois rdf:type :Person ;
+    :personName "François Bernard" ;
+    :email "francois.bernard@email.com" ;
+    rdfs:label "François Bernard" .
+
+:sophie rdf:type :Person ;
+    :personName "Sophie Durand" ;
+    :email "sophie.durand@email.com" ;
+    rdfs:label "Sophie Durand" .
+
+# Relations familiales et amicales
+:bob :isBrotherOf :claire .
+:claire :isSisterOf :bob .
+:alice :isParentOf :emma .
+:david :friendOf :bob .
+:alice :friendOf :sophie .
+:francois :friendOf :david .
+
+
+# Individus Lieux 
+
+# Pays
+:france rdf:type :Country ;
+    :placeName "France" ;
+    rdfs:label "France" .
+
+:italie rdf:type :Country ;
+    :placeName "Italie" ;
+    rdfs:label "Italie" .
+
+:suisse rdf:type :Country ;
+    :placeName "Suisse" ;
+    rdfs:label "Suisse" .
+
+# Régions
+:provence rdf:type :Region ;
+    :placeName "Provence" ;
+    :locatedIn :france ;
+    rdfs:label "Provence" .
+
+:iledefrance rdf:type :Region ;
+    :placeName "Île-de-France" ;
+    :locatedIn :france ;
+    rdfs:label "Île-de-France" .
+
+:valais rdf:type :Region ;
+    :placeName "Valais" ;
+    :locatedIn :suisse ;
+    rdfs:label "Valais" .
+
+# Villes
+:paris rdf:type :City ;
+    :placeName "Paris" ;
+    :locatedIn :iledefrance ;
+    rdfs:label "Paris" .
+
+:nice rdf:type :City ;
+    :placeName "Nice" ;
+    :locatedIn :provence ;
+    rdfs:label "Nice" .
+
+:rome rdf:type :City ;
+    :placeName "Rome" ;
+    :locatedIn :italie ;
+    rdfs:label "Rome" .
+
+:zermatt rdf:type :City ;
+    :placeName "Zermatt" ;
+    :locatedIn :valais ;
+    rdfs:label "Zermatt" .
+
+# Monuments
+:tourEiffel rdf:type :Landmark ;
+    :placeName "Tour Eiffel" ;
+    :locatedIn :paris ;
+    rdfs:label "Tour Eiffel" .
+
+:colisee rdf:type :Landmark ;
+    :placeName "Colisée" ;
+    :locatedIn :rome ;
+    rdfs:label "Colisée" .
+
+:promenadeDesAnglais rdf:type :Landmark ;
+    :placeName "Promenade des Anglais" ;
+    :locatedIn :nice ;
+    rdfs:label "Promenade des Anglais" .
+
+# Éléments naturels
+:cervin rdf:type :Mountain ;
+    :placeName "Cervin" ;
+    :locatedIn :zermatt ;
+    rdfs:label "Cervin" .
+
+:plageCote rdf:type :Beach ;
+    :placeName "Plage de la Côte d'Azur" ;
+    :locatedIn :nice ;
+    rdfs:label "Plage de la Côte d'Azur" .
+
+
+# Individus Animaux 
+
+:max rdf:type :Dog ;
+    rdfs:label "Max le chien" .
+
+:felix rdf:type :Cat ;
+    rdfs:label "Felix le chat" .
+
+:marguerite rdf:type :Cow ;
+    rdfs:label "Marguerite la vache" .
+
+
+# Individus Evenenement 
+
+:anniversaireBob rdf:type :Birthday ;
+    rdfs:label "Anniversaire de Bob" ;
+    rdfs:comment "Anniversaire de Bob - 30 ans" .
+
+:mariageAliceDavid rdf:type :Wedding ;
+    rdfs:label "Mariage d'Alice et David" ;
+    rdfs:comment "Cérémonie de mariage d'Alice et David" .
+
+:vacancesEte2024 rdf:type :Vacation ;
+    rdfs:label "Vacances été 2024" ;
+    rdfs:comment "Vacances d'été en famille" .
+
+:cremaillereEmma rdf:type :HousewarmingParty ;
+    rdfs:label "Pendaison de crémaillère Emma" ;
+    rdfs:comment "Fête de pendaison de crémaillère chez Emma" .
+
+:potDepartFrancois rdf:type :FarewellParty ;
+    rdfs:label "Pot de départ François" ;
+    rdfs:comment "Fête de départ de François" .
+
+
+# Individus Albums
+
+:albumVacances2024 rdf:type :Album ;
+    :albumName "Vacances été 2024" ;
+    :ownedBy :alice ;
+    rdfs:label "Album Vacances 2024" .
+
+:albumFamille rdf:type :Album ;
+    :albumName "Photos de famille" ;
+    :ownedBy :alice ;
+    rdfs:label "Album Famille" .
+
+:albumFetes rdf:type :Album ;
+    :albumName "Fêtes et événements" ;
+    :ownedBy :bob ;
+    rdfs:label "Album Fêtes" .
+
+:albumVoyages rdf:type :Album ;
+    :albumName "Voyages" ;
+    :ownedBy :david ;
+    rdfs:label "Album Voyages" .
+
+
+# Individus Photos 
+
+:photo001 rdf:type :Photo ;
+    :title "Tour Eiffel au coucher du soleil" ;
+    :description "Vue magnifique de la Tour Eiffel depuis le Trocadéro" ;
+    :dateTaken "2024-07-15T19:30:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :alice ;
+    :takenAt :tourEiffel ;
+    :depictsPlace :tourEiffel ;
+    :hasPhotoType :LandscapePhoto ;
+    :inAlbum :albumVoyages ;
+    rdfs:label "Photo 001" .
+
+:photo002 rdf:type :Photo ;
+    :title "Anniversaire de Bob - 30 ans" ;
+    :description "Bob souffle ses bougies entouré de ses amis" ;
+    :dateTaken "2024-08-20T18:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :claire ;
+    :takenDuring :anniversaireBob ;
+    :depictsPerson :bob , :david , :francois , :claire ;
+    :hasPhotoType :FamilyPhoto ;
+    :inAlbum :albumFetes ;
+    rdfs:label "Photo 002" .
+
+:photo003 rdf:type :Photo ;
+    :title "Selfie à Nice" ;
+    :description "Selfie d'Alice et Sophie sur la Promenade des Anglais" ;
+    :dateTaken "2024-06-10T14:30:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :alice ;
+    :takenAt :promenadeDesAnglais ;
+    :depictsPerson :alice , :sophie ;
+    :depictsPlace :promenadeDesAnglais ;
+    :hasPhotoType :Selfie ;
+    :inAlbum :albumVacances2024 ;
+    rdfs:label "Photo 003" .
+
+:photo004 rdf:type :Photo ;
+    :title "Mariage d'Alice et David" ;
+    :description "Les mariés devant la mairie" ;
+    :dateTaken "2023-09-15T16:00:00"^^xsd:dateTime ;
+    :yearTaken "2023"^^xsd:gYear ;
+    :takenBy :bob ;
+    :takenDuring :mariageAliceDavid ;
+    :depictsPerson :alice , :david ;
+    :takenAt :paris ;
+    :hasPhotoType :PortraitPhoto ;
+    :inAlbum :albumFamille ;
+    rdfs:label "Photo 004" .
+
+:photo005 rdf:type :Photo ;
+    :title "Le Colisée de Rome" ;
+    :description "Vue extérieure du Colisée sous le soleil" ;
+    :dateTaken "2024-05-22T11:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :david ;
+    :takenAt :colisee ;
+    :depictsPlace :colisee ;
+    :hasPhotoType :LandscapePhoto ;
+    :inAlbum :albumVoyages ;
+    rdfs:label "Photo 005" .
+
+:photo006 rdf:type :Photo ;
+    :title "Max à la plage" ;
+    :description "Max notre chien joue sur la plage" ;
+    :dateTaken "2024-07-05T10:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :emma ;
+    :takenAt :plageCote ;
+    :depictsAnimal :max ;
+    :depictsPlace :plageCote ;
+    :inAlbum :albumVacances2024 ;
+    rdfs:label "Photo 006" .
+
+:photo007 rdf:type :Photo ;
+    :title "Le Cervin en hiver" ;
+    :description "Vue spectaculaire du Cervin enneigé" ;
+    :dateTaken "2024-01-20T09:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :bob ;
+    :takenAt :zermatt ;
+    :depictsPlace :cervin ;
+    :hasPhotoType :LandscapePhoto ;
+    :inAlbum :albumVoyages ;
+    rdfs:label "Photo 007" .
+
+:photo008 rdf:type :Photo ;
+    :title "Pendaison de crémaillère Emma" ;
+    :description "Tous les amis réunis chez Emma" ;
+    :dateTaken "2024-03-12T20:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :francois ;
+    :takenDuring :cremaillereEmma ;
+    :depictsPerson :emma , :alice , :bob , :claire , :sophie ;
+    :hasPhotoType :FamilyPhoto ;
+    :inAlbum :albumFetes ;
+    rdfs:label "Photo 008" .
+
+:photo009 rdf:type :Photo ;
+    :title "Emma et Alice en famille" ;
+    :description "Portrait mère-fille dans le jardin" ;
+    :dateTaken "2024-04-08T15:30:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :david ;
+    :depictsPerson :alice , :emma ;
+    :hasPhotoType :PortraitPhoto ;
+    :inAlbum :albumFamille ;
+    rdfs:label "Photo 009" .
+
+:photo010 rdf:type :Photo ;
+    :title "Felix sur le canapé" ;
+    :description "Felix le chat endormi paisiblement" ;
+    :dateTaken "2024-02-14T16:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :claire ;
+    :depictsAnimal :felix ;
+    :inAlbum :albumFamille ;
+    rdfs:label "Photo 010" .
+
+:photo011 rdf:type :Photo ;
+    :title "Pot de départ François" ;
+    :description "François avec ses collègues pour son pot de départ" ;
+    :dateTaken "2024-09-30T18:30:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :david ;
+    :takenDuring :potDepartFrancois ;
+    :depictsPerson :francois , :david , :bob ;
+    :hasPhotoType :FamilyPhoto ;
+    :inAlbum :albumFetes ;
+    rdfs:label "Photo 011" .
+
+:photo012 rdf:type :Photo ;
+    :title "Bob et Claire - frère et sœur" ;
+    :description "Portrait de Bob et Claire dans le parc" ;
+    :dateTaken "2024-05-01T14:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :alice ;
+    :depictsPerson :bob , :claire ;
+    :hasPhotoType :PortraitPhoto ;
+    :inAlbum :albumFamille ;
+    rdfs:label "Photo 012" .
+
+:photo013 rdf:type :Photo ;
+    :title "Marguerite dans les Alpes" ;
+    :description "Une vache dans un pâturage alpin" ;
+    :dateTaken "2024-07-18T11:30:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :bob ;
+    :takenAt :zermatt ;
+    :depictsAnimal :marguerite ;
+    :inAlbum :albumVacances2024 ;
+    rdfs:label "Photo 013" .
+
+:photo014 rdf:type :Photo ;
+    :title "Groupe d'amis à Paris" ;
+    :description "Tous les amis devant la Tour Eiffel" ;
+    :dateTaken "2024-07-15T18:00:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :sophie ;
+    :takenAt :tourEiffel ;
+    :depictsPerson :alice , :bob , :david , :emma , :francois ;
+    :depictsPlace :tourEiffel ;
+    :hasPhotoType :FamilyPhoto ;
+    :inAlbum :albumVacances2024 ;
+    rdfs:label "Photo 014" .
+
+:photo015 rdf:type :Photo ;
+    :title "Coucher de soleil sur Nice" ;
+    :description "Vue panoramique sur la baie de Nice au crépuscule" ;
+    :dateTaken "2024-06-10T20:45:00"^^xsd:dateTime ;
+    :yearTaken "2024"^^xsd:gYear ;
+    :takenBy :alice ;
+    :takenAt :nice ;
+    :depictsPlace :nice , :plageCote ;
+    :hasPhotoType :LandscapePhoto ;
+    :inAlbum :albumVacances2024 ;
+    rdfs:label "Photo 015" . 

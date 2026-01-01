@@ -1,456 +1,296 @@
-#################################################################
-# REQUÊTES SPARQL POUR LE PROJET ALBUM PHOTO
-# Master MIASHS - UE RDC2
-#################################################################
+# ===============================================
+# REQUÊTES SPARQL - ONTOLOGIE ALBUM PHOTO
+# ===============================================
 
 PREFIX : <http://www.semanticweb.org/photoalbum#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
-
-#################################################################
-# REQUÊTE 1 : Toutes les photos représentant une personne spécifique
-#################################################################
-
+# ===============================================
+# REQUÊTE 1 : Lister toutes les photos avec leur titre et date
+# ===============================================
 SELECT ?photo ?title ?date
 WHERE {
     ?photo rdf:type :Photo ;
-           :depictsPerson :manuelAtencia ;
-           :title ?title ;
-           :dateTaken ?date .
-}
-ORDER BY DESC(?date)
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                                    | ?date
-# --------------|-------------------------------------------|-------------------------
-# :photo001     | "La Tour Eiffel au coucher du soleil"    | 2021-08-15T18:30:00
-# :photo003     | "Selfie à Paris"                          | 2021-08-16T11:00:00
-# :photo005     | "Anniversaire de Marie"                   | 2024-03-12T19:00:00
-# :photo006     | "Pendaison de crémaillère"                | 2023-09-20T18:30:00
-# :photo009     | "Philippe et Manuel à Grenoble"           | 2023-10-08T14:30:00
-# :photo015     | "Amis à Grenoble"                         | 2023-09-20T19:00:00
-
-
-#################################################################
-# REQUÊTE 2 : Photos représentant plusieurs personnes ensemble
-#################################################################
-
-SELECT ?photo ?title ?date
-WHERE {
-    ?photo rdf:type :Photo ;
-           :depictsPerson :manuelAtencia ;
-           :depictsPerson :philippeGenoud ;
            :title ?title ;
            :dateTaken ?date .
 }
 ORDER BY ?date
 
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                                    | ?date
-# --------------|-------------------------------------------|-------------------------
-# :photo001     | "La Tour Eiffel au coucher du soleil"    | 2021-08-15T18:30:00
-# :photo009     | "Philippe et Manuel à Grenoble"           | 2023-10-08T14:30:00
-# :photo015     | "Amis à Grenoble"                         | 2023-09-20T19:00:00
 
-
-#################################################################
-# REQUÊTE 3 : Toutes les photos comportant des personnes
-#################################################################
-
-SELECT DISTINCT ?photo ?title
+# ===============================================
+# REQUÊTE 2 : Trouver toutes les photos prises par Alice
+# ===============================================
+SELECT ?photo ?title ?date
 WHERE {
     ?photo rdf:type :Photo ;
-           :depictsPerson ?person ;
-           :title ?title .
+           :title ?title ;
+           :takenBy :alice ;
+           :dateTaken ?date .
 }
-ORDER BY ?title
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title
-# --------------|-----------------------------------------------
-# :photo015     | "Amis à Grenoble"
-# :photo005     | "Anniversaire de Marie"
-# :photo001     | "La Tour Eiffel au coucher du soleil"
-# :photo003     | "Selfie à Paris"
-# :photo004     | "Plage en été"
-# :photo006     | "Pendaison de crémaillère"
-# :photo009     | "Philippe et Manuel à Grenoble"
-# :photo007     | "Portrait de famille"
-# :photo011     | "Luc à Paris"
-# :photo014     | "Vacances de Noël"
+ORDER BY ?date
 
 
-#################################################################
-# REQUÊTE 4 : Photos où il n'y a pas de personnes (avec FILTER NOT EXISTS)
-#################################################################
-
+# ===============================================
+# REQUÊTE 3 : Lister toutes les photos de l'album "Vacances été 2024"
+# ===============================================
 SELECT ?photo ?title ?description
 WHERE {
     ?photo rdf:type :Photo ;
            :title ?title ;
-           :description ?description .
-    FILTER NOT EXISTS {
-        ?photo :depictsPerson ?person .
-    }
-}
-ORDER BY ?title
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                    | ?description
-# --------------|---------------------------|------------------------------------
-# :photo012     | "Vache dans les Alpes"   | "Vache en pâturage"
-# :photo013     | "Chien de Marie"         | "Le chien de la famille dans le jardin"
-# :photo002     | "Montagne dans les Alpes"| "Randonnée en montagne près de Grenoble"
-# :photo010     | "Tour Eiffel de nuit"    | "La Tour Eiffel illuminée"
-# :photo008     | "Vue de Grenoble"        | "Panorama de la ville depuis la Bastille"
-
-
-#################################################################
-# REQUÊTE 5 : Photos des amis de Manuel Atencia (avec raisonnement)
-#################################################################
-
-SELECT DISTINCT ?photo ?title ?friend ?friendName
-WHERE {
-    :manuelAtencia :friendOf ?friend .
-    ?photo :depictsPerson ?friend ;
-           :title ?title .
-    ?friend :personName ?friendName .
-}
-ORDER BY ?friendName
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                                    | ?friend           | ?friendName
-# --------------|-------------------------------------------|-------------------|------------------
-# :photo001     | "La Tour Eiffel au coucher du soleil"    | :philippeGenoud   | "Philippe Genoud"
-# :photo006     | "Pendaison de crémaillère"                | :philippeGenoud   | "Philippe Genoud"
-# :photo009     | "Philippe et Manuel à Grenoble"           | :philippeGenoud   | "Philippe Genoud"
-# :photo015     | "Amis à Grenoble"                         | :philippeGenoud   | "Philippe Genoud"
-
-
-#################################################################
-# REQUÊTE 6 : Photos de fêtes (anniversaires, crémaillères...) avec inférence OWL
-#################################################################
-
-SELECT ?photo ?title ?event ?eventType
-WHERE {
-    ?photo :takenDuring ?event ;
-           :title ?title .
-    ?event rdf:type ?eventType .
-    ?eventType rdfs:subClassOf* :Party .
-}
-ORDER BY ?title
-
-# RÉSULTATS ATTENDUS (avec raisonnement OWL) :
-# ?photo        | ?title                        | ?event                | ?eventType
-# --------------|-------------------------------|------------------------|---------------------
-# :photo005     | "Anniversaire de Marie"       | :birthday2024          | :Birthday
-# :photo006     | "Pendaison de crémaillère"    | :housewarming2023      | :HousewarmingParty
-# :photo015     | "Amis à Grenoble"             | :housewarming2023      | :HousewarmingParty
-
-
-#################################################################
-# REQUÊTE 7 : Photos de pendaison de crémaillère avec Manuel Atencia
-#################################################################
-
-SELECT ?photo ?title ?date ?place
-WHERE {
-    ?photo :takenDuring ?event ;
-           :depictsPerson :manuelAtencia ;
-           :title ?title ;
-           :dateTaken ?date .
-    ?event rdf:type :HousewarmingParty .
-    OPTIONAL { ?photo :takenAt ?place . }
+           :description ?description ;
+           :inAlbum :albumVacances2024 .
 }
 
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                        | ?date                 | ?place
-# --------------|-------------------------------|------------------------|-------------
-# :photo006     | "Pendaison de crémaillère"    | 2023-09-20T18:30:00   | :grenoble
-# :photo015     | "Amis à Grenoble"             | 2023-09-20T19:00:00   | :grenoble
 
-
-#################################################################
-# REQUÊTE 8 : Photos prises pendant une période donnée (avec FILTER)
-#################################################################
-
-SELECT ?photo ?title ?date
+# ===============================================
+# REQUÊTE 4 : Trouver toutes les personnes qui apparaissent sur des photos
+# ===============================================
+SELECT DISTINCT ?person ?name
 WHERE {
     ?photo rdf:type :Photo ;
-           :title ?title ;
-           :dateTaken ?date .
-    FILTER (?date >= "2021-07-01T00:00:00"^^xsd:dateTime && 
-            ?date <= "2021-08-31T23:59:59"^^xsd:dateTime)
-}
-ORDER BY ?date
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                                    | ?date
-# --------------|-------------------------------------------|-------------------------
-
-
-
-#################################################################
-# REQUÊTE 9 : Photos d'un lieu avec hiérarchie géographique (transitivité)
-#################################################################
-
-SELECT ?photo ?title ?place ?placeName
-WHERE {
-    ?photo :takenAt ?place ;
-           :title ?title .
-    ?place :locatedIn* :france ;
-           :placeName ?placeName .
-}
-ORDER BY ?placeName
-
-# RÉSULTATS ATTENDUS (avec raisonnement sur la propriété transitive) :
-# ?photo        | ?title                                    | ?place        | ?placeName
-# --------------|-------------------------------------------|---------------|----------------
-
-
-
-#################################################################
-# REQUÊTE 10 : Photos d'objets spécifiques (Tour Eiffel)
-#################################################################
-
-SELECT ?photo ?title ?date ?takenBy
-WHERE {
-    ?photo :depictsObject :eiffelTower ;
-           :title ?title ;
-           :dateTaken ?date .
-    OPTIONAL { ?photo :takenBy ?takenBy . }
-}
-ORDER BY ?date
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                                    | ?date                 | ?takenBy
-# --------------|-------------------------------------------|-----------------------|------------------
-
-
-
-#################################################################
-# REQUÊTE 11 : Photos d'animaux (vaches, chiens...)
-#################################################################
-
-SELECT ?photo ?title ?animal ?animalType
-WHERE {
-    ?photo :depictsAnimal ?animal ;
-           :title ?title .
-    ?animal rdf:type ?animalType .
-    FILTER (?animalType != owl:NamedIndividual)
-}
-ORDER BY ?title
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                    | ?animal   | ?animalType
-# --------------|---------------------------|-----------|-------------
-
-
-#################################################################
-# REQUÊTE 12 : Selfies d'un utilisateur spécifique
-#################################################################
-
-SELECT ?photo ?title ?date ?person
-WHERE {
-    ?photo rdf:type :Photo ;
-           :hasPhotoType :Selfie ;
-           :title ?title ;
-           :dateTaken ?date ;
-           :takenBy ?person ;
            :depictsPerson ?person .
+    ?person :personName ?name .
 }
-ORDER BY ?date
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title               | ?date                 | ?person
-# --------------|----------------------|-----------------------|------------------
+ORDER BY ?name
 
 
-
-#################################################################
-# REQUÊTE 13 : Statistiques par album (avec COUNT et GROUP BY)
-#################################################################
-
-SELECT ?album ?albumName (COUNT(?photo) AS ?nbPhotos)
+# ===============================================
+# REQUÊTE 5 : Compter le nombre de photos par album
+# ===============================================
+SELECT ?albumName (COUNT(?photo) AS ?nbPhotos)
 WHERE {
     ?album rdf:type :Album ;
            :albumName ?albumName .
-    OPTIONAL {
-        ?photo :inAlbum ?album .
-    }
+    ?photo :inAlbum ?album .
 }
-GROUP BY ?album ?albumName
+GROUP BY ?albumName
 ORDER BY DESC(?nbPhotos)
 
-# RÉSULTATS ATTENDUS :
-# ?album    | ?albumName                    | ?nbPhotos
-# ----------|-------------------------------|----------
 
-
-
-#################################################################
-# REQUÊTE 14 : Photos avec UNION (photos de Paris OU de Grenoble)
-#################################################################
-
-SELECT ?photo ?title ?place
+# ===============================================
+# REQUÊTE 6 : Trouver les photos prises en France (utilisant la transitivité)
+# ===============================================
+SELECT ?photo ?title ?place ?placeName
 WHERE {
     ?photo rdf:type :Photo ;
            :title ?title ;
            :takenAt ?place .
-    {
-        ?place :locatedIn* :paris .
-    }
-    UNION
-    {
-        ?photo :takenAt :grenoble .
+    ?place :locatedIn* :france ;
+           :placeName ?placeName .
+}
+
+
+# ===============================================
+# REQUÊTE 7 : Lister les photos avec des animaux
+# ===============================================
+SELECT ?photo ?title ?animal ?animalLabel
+WHERE {
+    ?photo rdf:type :Photo ;
+           :title ?title ;
+           :depictsAnimal ?animal .
+    ?animal rdfs:label ?animalLabel .
+}
+
+
+# ===============================================
+# REQUÊTE 8 : Trouver les photos de type "Photo de paysage"
+# ===============================================
+SELECT ?photo ?title ?date ?place
+WHERE {
+    ?photo rdf:type :Photo ;
+           :title ?title ;
+           :dateTaken ?date ;
+           :hasPhotoType :LandscapePhoto .
+    OPTIONAL { 
+        ?photo :takenAt ?place .
+        ?place :placeName ?placeName .
     }
 }
-ORDER BY ?title
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                                    | ?place
-# --------------|-------------------------------------------|-------------
+ORDER BY ?date
 
 
+# ===============================================
+# REQUÊTE 9 : Trouver les photos prises lors d'événements de type "Fête"
+# ===============================================
+SELECT ?photo ?title ?event ?eventLabel
+WHERE {
+    ?photo rdf:type :Photo ;
+           :title ?title ;
+           :takenDuring ?event .
+    ?event rdf:type/rdfs:subClassOf* :Party ;
+           rdfs:label ?eventLabel .
+}
 
-#################################################################
-# REQUÊTE 15 : Requête complexe avec plusieurs critères et OPTIONAL
-#################################################################
 
-SELECT ?photo ?title ?date ?author ?authorName ?event ?place
+# ===============================================
+# REQUÊTE 10 : Lister les amis de Bob
+# ===============================================
+SELECT ?friend ?name
+WHERE {
+    :bob :friendOf ?friend .
+    ?friend :personName ?name .
+}
+
+
+# ===============================================
+# REQUÊTE 11 : Trouver les frères et sœurs (utilisant isSiblingOf)
+# ===============================================
+SELECT ?person1 ?name1 ?person2 ?name2
+WHERE {
+    ?person1 :isSiblingOf ?person2 ;
+             :personName ?name1 .
+    ?person2 :personName ?name2 .
+    FILTER(?person1 < ?person2)
+}
+
+
+# ===============================================
+# REQUÊTE 12 : Compter le nombre de photos par photographe
+# ===============================================
+SELECT ?photographer ?name (COUNT(?photo) AS ?nbPhotos)
+WHERE {
+    ?photo rdf:type :Photo ;
+           :takenBy ?photographer .
+    ?photographer :personName ?name .
+}
+GROUP BY ?photographer ?name
+ORDER BY DESC(?nbPhotos)
+
+
+# ===============================================
+# REQUÊTE 13 : Trouver les photos prises en 2024
+# ===============================================
+SELECT ?photo ?title ?date
+WHERE {
+    ?photo rdf:type :Photo ;
+           :title ?title ;
+           :yearTaken "2024"^^xsd:gYear ;
+           :dateTaken ?date .
+}
+ORDER BY ?date
+
+
+# ===============================================
+# REQUÊTE 14 : Lister les albums avec leur propriétaire
+# ===============================================
+SELECT ?album ?albumName ?owner ?ownerName
+WHERE {
+    ?album rdf:type :Album ;
+           :albumName ?albumName ;
+           :ownedBy ?owner .
+    ?owner :personName ?ownerName .
+}
+
+
+# ===============================================
+# REQUÊTE 15 : Trouver les photos où apparaissent Alice et Emma ensemble
+# ===============================================
+SELECT ?photo ?title ?date
+WHERE {
+    ?photo rdf:type :Photo ;
+           :title ?title ;
+           :dateTaken ?date ;
+           :depictsPerson :alice ;
+           :depictsPerson :emma .
+}
+
+
+# ===============================================
+# REQUÊTE 16 : Lister les lieux de type "Monument" (Landmark)
+# ===============================================
+SELECT ?landmark ?name ?city ?cityName
+WHERE {
+    ?landmark rdf:type :Landmark ;
+              :placeName ?name ;
+              :locatedIn ?city .
+    ?city :placeName ?cityName .
+}
+
+
+# ===============================================
+# REQUÊTE 17 : Trouver les photos prises lors de mariages
+# ===============================================
+SELECT ?photo ?title ?date ?event
+WHERE {
+    ?photo rdf:type :Photo ;
+           :title ?title ;
+           :dateTaken ?date ;
+           :takenDuring ?event .
+    ?event rdf:type :Wedding .
+}
+
+
+# ===============================================
+# REQUÊTE 18 : Compter combien de fois chaque personne apparaît sur des photos
+# ===============================================
+SELECT ?person ?name (COUNT(?photo) AS ?nbApparitions)
+WHERE {
+    ?photo rdf:type :Photo ;
+           :depictsPerson ?person .
+    ?person :personName ?name .
+}
+GROUP BY ?person ?name
+ORDER BY DESC(?nbApparitions)
+
+
+# ===============================================
+# REQUÊTE 19 : Trouver toutes les relations parent-enfant
+# ===============================================
+SELECT ?parent ?parentName ?child ?childName
+WHERE {
+    ?parent :isParentOf ?child ;
+            :personName ?parentName .
+    ?child :personName ?childName .
+}
+
+
+# ===============================================
+# REQUÊTE 20 : Trouver les photos de selfies avec les personnes présentes
+# ===============================================
+SELECT ?photo ?title ?person ?personName
+WHERE {
+    ?photo rdf:type :Photo ;
+           :title ?title ;
+           :hasPhotoType :Selfie ;
+           :depictsPerson ?person .
+    ?person :personName ?personName .
+}
+
+
+# ===============================================
+# REQUÊTE 21 : Statistiques globales
+# ===============================================
+SELECT (COUNT(DISTINCT ?photo) AS ?totalPhotos)
+       (COUNT(DISTINCT ?person) AS ?totalPersons)
+       (COUNT(DISTINCT ?album) AS ?totalAlbums)
+       (COUNT(DISTINCT ?place) AS ?totalPlaces)
+WHERE {
+    ?photo rdf:type :Photo .
+    ?person rdf:type :Person .
+    ?album rdf:type :Album .
+    ?place rdf:type :Place .
+}
+
+
+# ===============================================
+# REQUÊTE 22 : Photos avec lieu, date et personnes
+# ===============================================
+SELECT ?photo ?title ?date ?placeName 
+       (GROUP_CONCAT(DISTINCT ?personName; separator=", ") AS ?persons)
 WHERE {
     ?photo rdf:type :Photo ;
            :title ?title ;
            :dateTaken ?date .
-
-    OPTIONAL {
-        ?photo :takenBy ?author .
-        ?author :personName ?authorName .
-    }
-
-    OPTIONAL {
-        ?photo :takenDuring ?event .
-    }
-
-    OPTIONAL {
-        ?photo :takenAt ?place .
-    }
-
-    FILTER (YEAR(?date) >= 2023)
-}
-ORDER BY DESC(?date)
-LIMIT 5
-
-# RÉSULTATS ATTENDUS :
-# ?photo    | ?title                        | ?date                 | ?author           | ?authorName       | ?event            | ?place
-# ----------|-------------------------------|-----------------------|-------------------|-------------------|-------------------|------------
-# :photo005 | "Anniversaire de Marie"       | 2024-03-12T19:00:00   | :lucDupont        | "Luc Dupont"      | :birthday2024     | :grenoble
-# :photo009 | "Philippe et Manuel..."       | 2023-10-08T14:30:00   | :jeromeGensel     | "Jérôme Gensel"   | (none)            | :grenoble
-# :photo015 | "Amis à Grenoble"             | 2023-09-20T19:00:00   | :marieMartin      | "Marie Martin"    | :housewarming2023 | :grenoble
-# :photo006 | "Pendaison de crémaillère"    | 2023-09-20T18:30:00   | :marieMartin      | "Marie Martin"    | :housewarming2023 | :grenoble
-# :photo008 | "Vue de Grenoble"             | 2023-06-15T17:00:00   | :philippeGenoud   | "Philippe Genoud" | (none)            | :grenoble
-
-
-#################################################################
-# REQUÊTE 16 : Photos de frères et sœurs ensemble (propriété symétrique)
-#################################################################
-
-SELECT ?photo ?title ?person1 ?person2 ?person1Name ?person2Name
-WHERE {
-    ?person1 :isSiblingOf ?person2 .
-    ?photo :depictsPerson ?person1 ;
-           :depictsPerson ?person2 ;
-           :title ?title .
-    ?person1 :personName ?person1Name .
-    ?person2 :personName ?person2Name .
-}
-
-# RÉSULTATS ATTENDUS (avec raisonnement sur propriétés symétriques) :
-# ?photo    | ?title                    | ?person1      | ?person2      | ?person1Name  | ?person2Name
-# ----------|---------------------------|---------------|---------------|---------------|---------------
-# :photo004 | "Plage en été"            | :marieMartin  | :lucDupont    | "Marie Martin"| "Luc Dupont"
-# :photo007 | "Portrait de famille"     | :marieMartin  | :lucDupont    | "Marie Martin"| "Luc Dupont"
-# :photo014 | "Vacances de Noël"        | :lucDupont    | :marieMartin  | "Luc Dupont"  | "Marie Martin"
-
-
-#################################################################
-# REQUÊTE 17 : Photos par type avec comptage
-#################################################################
-
-SELECT ?photoType (COUNT(?photo) AS ?count)
-WHERE {
-    ?photo :hasPhotoType ?photoType .
-}
-GROUP BY ?photoType
-ORDER BY DESC(?count)
-
-# RÉSULTATS ATTENDUS :
-# ?photoType        | ?count
-# ------------------|-------
-# :FamilyPhoto      | 5
-# :LandscapePhoto   | 5
-# :PortraitPhoto    | 3
-# :Selfie           | 2
-
-
-#################################################################
-# REQUÊTE 18 : Photos de lieux spécifiques en Isère
-#################################################################
-
-SELECT ?photo ?title ?place ?placeName
-WHERE {
-    ?photo :takenAt ?place ;
-           :title ?title .
-    ?place :locatedIn+ :isere ;
-           :placeName ?placeName .
-}
-
-# RÉSULTATS ATTENDUS :
-# ?photo        | ?title                            | ?place    | ?placeName
-# --------------|-----------------------------------|-----------|-------------
-# :photo002     | "Montagne dans les Alpes"        | :grenoble | "Grenoble"
-# :photo005     | "Anniversaire de Marie"          | :grenoble | "Grenoble"
-# :photo006     | "Pendaison de crémaillère"       | :grenoble | "Grenoble"
-# :photo007     | "Portrait de famille"            | :grenoble | "Grenoble"
-# :photo008     | "Vue de Grenoble"                | :grenoble | "Grenoble"
-# :photo009     | "Philippe et Manuel à Grenoble"  | :grenoble | "Grenoble"
-# :photo012     | "Vache dans les Alpes"           | :grenoble | "Grenoble"
-# :photo013     | "Chien de Marie"                 | :grenoble | "Grenoble"
-# :photo015     | "Amis à Grenoble"                | :grenoble | "Grenoble"
-
-
-#################################################################
-# REQUÊTE 19 : Toutes les informations sur une photo spécifique
-#################################################################
-
-DESCRIBE :photo001
-
-
-#################################################################
-# REQUÊTE 20 : Requête CONSTRUCT pour créer un nouveau graphe
-#################################################################
-
-CONSTRUCT {
-    ?photo :summary ?summary .
-    ?photo :hasLocation ?placeName .
-    ?photo :numberOfPeople ?count .
-}
-WHERE {
-    ?photo rdf:type :Photo ;
-           :title ?summary .
     OPTIONAL {
         ?photo :takenAt ?place .
         ?place :placeName ?placeName .
     }
-    {
-        SELECT ?photo (COUNT(?person) AS ?count)
-        WHERE {
-            ?photo :depictsPerson ?person .
-        }
-        GROUP BY ?photo
+    OPTIONAL {
+        ?photo :depictsPerson ?person .
+        ?person :personName ?personName .
     }
 }
-
+GROUP BY ?photo ?title ?date ?placeName
+ORDER BY ?date

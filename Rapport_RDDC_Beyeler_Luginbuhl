@@ -1,0 +1,483 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+\geometry{margin=2.5cm}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red}
+}
+
+\title{\textbf{Projet Album Photo avec le Web Sémantique} \\ 
+\large UE Représentation des Données et des Connaissances 2}
+\author{Master MIASHS -- Parcours IC \\ Université Grenoble Alpes}
+\date{Année 2025-2026}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Ce projet vise à construire un système d'album photo basé sur les technologies du Web Sémantique (RDF, RDFS, OWL, SPARQL). L'objectif est de permettre aux utilisateurs d'annoter leurs photos et de les rechercher selon différents critères : personnes présentes, lieux, événements, dates, objets, etc.
+
+Le projet est organisé en trois composants principaux :
+\begin{enumerate}
+    \item Une \textbf{ontologie OWL} définissant les classes, propriétés et relations
+    \item Un \textbf{jeu de données RDF} avec 15 photos d'exemple annotées
+    \item Un \textbf{ensemble de 20 requêtes SPARQL} démontrant les capacités de recherche
+\end{enumerate}
+
+\section{Architecture de l'Ontologie}
+
+\subsection{Choix de conception}
+
+L'ontologie a été conçue pour répondre aux quatre questions fondamentales du projet :
+\begin{itemize}
+    \item \textbf{Qui ?} -- Personnes apparaissant sur les photos
+    \item \textbf{Quoi ?} -- Objets, animaux, éléments visibles
+    \item \textbf{Où ?} -- Lieux géographiques
+    \item \textbf{Quand ?} -- Dates et périodes temporelles
+\end{itemize}
+
+\subsection{Convention de nommage}
+
+\textbf{Choix stratégique :} Nous avons adopté la convention suivante pour garantir à la fois l'interopérabilité internationale et la lisibilité en français :
+
+\begin{itemize}
+    \item \textbf{Identifiants (URIs) en anglais} : \texttt{:Photo}, \texttt{:Person}, \texttt{:Event}, \texttt{:takenAt}, etc.
+    \item \textbf{Labels (rdfs:label) en français} : "Photo", "Personne", "Événement", "prise à", etc.
+    \item \textbf{Commentaires (rdfs:comment) en français} : descriptions complètes pour la documentation
+\end{itemize}
+
+\textbf{Justification :}
+\begin{itemize}
+    \item Les \textbf{identifiants en anglais} suivent la pratique standard du Web Sémantique, facilitant l'interopérabilité avec d'autres ontologies internationales (FOAF, Dublin Core, Schema.org)
+    \item Les \textbf{labels et commentaires en français} assurent une lisibilité optimale pour les utilisateurs francophones et permettent un affichage naturel dans les interfaces
+    \item Cette séparation permet d'internationaliser facilement l'ontologie en ajoutant des labels dans d'autres langues sans modifier les URIs
+\end{itemize}
+
+\textbf{Exemple :}
+\begin{lstlisting}[language=RDF]
+:Person rdf:type owl:Class ;
+    rdfs:label "Personne" ;
+    rdfs:comment "Une personne apparaissant sur une photo 
+                  ou auteur d'une photo" .
+\end{lstlisting}
+
+\subsection{Hiérarchie des classes principales}
+
+\textbf{Classes de premier niveau :}
+\begin{itemize}
+    \item \texttt{Photo} : représente une image photographique
+    \item \texttt{Album} : collection de photos
+    \item \texttt{Person} : personne (sous-classe de \texttt{foaf:Person})
+    \item \texttt{Place} : lieu géographique
+    \item \texttt{Event} : événement capturé
+    \item \texttt{PhysicalObject} : objet physique visible
+    \item \texttt{Animal} : animal visible sur une photo
+    \item \texttt{PhotoType} : catégorie de photo
+\end{itemize}
+
+\textbf{Hiérarchies spécialisées :}
+\begin{itemize}
+    \item \texttt{Event} $\supset$ \texttt{Party} $\supset$ \{\texttt{Birthday}, \texttt{HousewarmingParty}, \texttt{FarewellParty}\}
+    \item \texttt{Event} $\supset$ \{\texttt{Wedding}, \texttt{Vacation}\}
+    \item \texttt{Place} $\supset$ \{\texttt{City}, \texttt{Country}, \texttt{Region}, \texttt{Landmark}, \texttt{Mountain}, \texttt{Beach}\}
+    \item \texttt{PhotoType} $\supset$ \{\texttt{FamilyPhoto}, \texttt{Selfie}, \texttt{LandscapePhoto}, \texttt{PortraitPhoto}\}
+    \item \texttt{PhysicalObject} $\supset$ \texttt{Building}
+    \item \texttt{Animal} $\supset$ \{\texttt{Dog}, \texttt{Cat}, \texttt{Cow}\}
+    \item \texttt{TimePeriod} $\supset$ \texttt{Season} $\supset$ \{\texttt{Summer}, \texttt{Winter}, \texttt{Spring}, \texttt{Autumn}\}
+\end{itemize}
+
+\textbf{Justification de l'organisation des lieux :} \texttt{Mountain} et \texttt{Beach} sont des sous-classes de \texttt{Place} (et non de \texttt{PhysicalObject}) car ce sont des lieux géographiques où des photos peuvent être prises. Cette décision évite les incohérences avec la contrainte \texttt{Place disjointWith PhysicalObject}.
+
+\subsection{Réutilisation de vocabulaires existants}
+
+Pour favoriser l'interopérabilité, l'ontologie réutilise plusieurs vocabulaires standards :
+\begin{itemize}
+    \item \textbf{FOAF} (\texttt{foaf:Person}) : description des personnes
+    \item \textbf{Dublin Core} (\texttt{dc:creator}, \texttt{dc:title}) : métadonnées
+    \item \textbf{Schema.org} : schémas de données structurées
+    \item \textbf{WGS84} : coordonnées géographiques (latitude/longitude)
+\end{itemize}
+
+\subsection{Classes disjointes}
+
+Des contraintes de disjonction ont été définies pour assurer la cohérence de l'ontologie et permettre au raisonneur de détecter les incohérences logiques :
+
+\textbf{Disjonctions principales :}
+\begin{itemize}
+    \item \texttt{Person} \textsf{disjointWith} \texttt{Place}, \texttt{Animal}, \texttt{PhysicalObject}
+    \item \texttt{Animal} \textsf{disjointWith} \texttt{Place}, \texttt{PhysicalObject}
+    \item \texttt{Place} \textsf{disjointWith} \texttt{PhysicalObject}
+\end{itemize}
+
+\textbf{Disjonctions entre types de photos :}
+\begin{itemize}
+    \item \texttt{FamilyPhoto} \textsf{disjointWith} \texttt{Selfie}, \texttt{LandscapePhoto}
+    \item \texttt{Selfie} \textsf{disjointWith} \texttt{LandscapePhoto}, \texttt{PortraitPhoto}
+    \item \texttt{LandscapePhoto} \textsf{disjointWith} \texttt{PortraitPhoto}
+\end{itemize}
+
+\textbf{Disjonctions entre événements :}
+\begin{itemize}
+    \item \texttt{Birthday} \textsf{disjointWith} \texttt{Wedding}, \texttt{Vacation}
+    \item \texttt{Wedding} \textsf{disjointWith} \texttt{Vacation}
+    \item \texttt{HousewarmingParty} \textsf{disjointWith} \texttt{FarewellParty}
+\end{itemize}
+
+\textbf{Disjonctions entre lieux :}
+\begin{itemize}
+    \item \texttt{City} \textsf{disjointWith} \texttt{Country}, \texttt{Region}, \texttt{Landmark}
+    \item \texttt{Country} \textsf{disjointWith} \texttt{Region}, \texttt{Landmark}
+    \item \texttt{Region} \textsf{disjointWith} \texttt{Landmark}
+\end{itemize}
+
+\textbf{Disjonctions entre animaux :}
+\begin{itemize}
+    \item \texttt{Dog} \textsf{disjointWith} \texttt{Cat}, \texttt{Cow}
+    \item \texttt{Cat} \textsf{disjointWith} \texttt{Cow}
+\end{itemize}
+
+\textbf{Justification :} Ces contraintes empêchent les erreurs logiques (ex: une photo ne peut pas être à la fois un selfie et un paysage) et permettent au raisonneur OWL de détecter les incohérences dans les données.
+
+\section{Propriétés de l'Ontologie}
+
+\subsection{Object Properties (relations entre objets)}
+
+\textbf{Propriétés liées aux photos :}
+\begin{itemize}
+    \item \texttt{depicts} : propriété générique pour ce qui est représenté
+    \item \texttt{depictsPerson}, \texttt{depictsPlace}, \texttt{depictsObject}, \texttt{depictsAnimal} : spécialisations
+    \item \texttt{takenAt} : lieu de prise de vue
+    \item \texttt{takenBy} : auteur de la photo
+    \item \texttt{takenDuring} : événement associé
+    \item \texttt{inAlbum} / \texttt{containsPhoto} : relation photo-album (inverse)
+\end{itemize}
+
+\textbf{Propriétés liées aux personnes :}
+\begin{itemize}
+    \item \texttt{friendOf} : relation d'amitié (\textbf{symétrique} + \textbf{irréflexive})
+    \item \texttt{isBrotherOf}, \texttt{isSisterOf} : relations fraternelles (\textbf{symétriques})
+    \item \texttt{isSiblingOf} : relation générique (\textbf{symétrique} + \textbf{irréflexive})
+    \item \texttt{isParentOf} / \texttt{isChildOf} : relations parent-enfant (\textbf{inverses} + \textbf{asymétrique} + \textbf{irréflexive})
+\end{itemize}
+
+\textbf{Note importante :} La propriété \texttt{isSiblingOf} n'est PAS transitive dans notre ontologie car en OWL 2 DL, une propriété transitive ne peut pas être déclarée irréflexive (contrainte de "propriété simple"). La transitivité a été sacrifiée au profit de l'irréflexivité qui est logiquement plus importante (une personne ne peut pas être son propre frère/sœur).
+
+\textbf{Propriétés géographiques :}
+\begin{itemize}
+    \item \texttt{locatedIn} / \texttt{contains} : hiérarchie géographique (transitives et inverses)
+\end{itemize}
+
+\subsection{Contraintes de cardinalité OWL}
+
+Des contraintes de cardinalité ont été ajoutées pour garantir l'intégrité des données :
+
+\textbf{Sur la classe Photo :}
+\begin{itemize}
+    \item \texttt{minCardinality 1} sur \texttt{title} : toute photo doit avoir un titre
+    \item \texttt{cardinality 1} sur \texttt{dateTaken} : une photo a exactement une date de prise
+    \item \texttt{minCardinality 1} sur \texttt{inAlbum} : toute photo doit appartenir à au moins un album
+\end{itemize}
+
+\textbf{Sur la classe Album :}
+\begin{itemize}
+    \item \texttt{cardinality 1} sur \texttt{albumName} : un album a exactement un nom
+    \item \texttt{cardinality 1} sur \texttt{ownedBy} : un album a exactement un propriétaire
+\end{itemize}
+
+\textbf{Sur la classe Person :}
+\begin{itemize}
+    \item \texttt{minCardinality 1} sur \texttt{personName} : toute personne doit avoir au moins un nom
+\end{itemize}
+
+\textbf{Sur la classe Place :}
+\begin{itemize}
+    \item \texttt{minCardinality 1} sur \texttt{placeName} : tout lieu doit avoir au moins un nom
+\end{itemize}
+
+\textbf{Justification :} Ces contraintes permettent au raisonneur de valider que les données sont complètes et de détecter les instances mal formées.
+
+\subsection{Caractéristiques OWL avancées}
+
+\textbf{Propriétés symétriques :} Si A est ami de B, alors B est ami de A (inféré automatiquement).
+
+\textbf{Propriétés transitives :} \texttt{locatedIn} et \texttt{contains} sont transitives. Si Paris est en Île-de-France et Île-de-France est en France, alors Paris est en France (inféré).
+
+\textbf{Propriétés inverses :} \texttt{locatedIn}/\texttt{contains}, \texttt{isParentOf}/\texttt{isChildOf}, \texttt{inAlbum}/\texttt{containsPhoto} permettent la navigation bidirectionnelle.
+
+\textbf{Propriétés fonctionnelles :} \texttt{dateTaken}, \texttt{email}, \texttt{takenBy} sont fonctionnelles (une seule valeur possible).
+
+\textbf{Propriétés irréflexives :} \texttt{friendOf}, \texttt{isSiblingOf}, \texttt{isParentOf} empêchent qu'une personne ait une relation avec elle-même.
+
+\textbf{Propriétés asymétriques :} \texttt{isParentOf} garantit que si A est parent de B, alors B ne peut pas être parent de A.
+
+\subsection{Data Properties (propriétés de données)}
+
+\textbf{Propriétés des photos :}
+\begin{itemize}
+    \item \texttt{title} (xsd:string) : titre de la photo
+    \item \texttt{description} (xsd:string) : description textuelle
+    \item \texttt{dateTaken} (xsd:dateTime, \textbf{fonctionnelle}) : date et heure précises
+    \item \texttt{yearTaken} (xsd:gYear) : année de prise (pour filtrage)
+\end{itemize}
+
+\textbf{Propriétés des personnes :}
+\begin{itemize}
+    \item \texttt{personName} (xsd:string) : nom de la personne
+    \item \texttt{email} (xsd:string, \textbf{fonctionnelle}) : adresse email unique
+\end{itemize}
+
+\textbf{Propriétés des lieux :}
+\begin{itemize}
+    \item \texttt{placeName} (xsd:string) : nom du lieu
+\end{itemize}
+
+\textbf{Propriétés des albums :}
+\begin{itemize}
+    \item \texttt{albumName} (xsd:string) : nom de l'album
+\end{itemize}
+
+\textbf{Note sur les propriétés inverses fonctionnelles :} La propriété \texttt{email} était initialement déclarée comme \texttt{InverseFunctionalProperty} pour garantir l'unicité des emails, mais cette caractéristique a été retirée car en OWL 2 DL, \texttt{InverseFunctionalProperty} ne s'applique qu'aux Object Properties, pas aux Data Properties.
+
+\section{Jeu de Données}
+
+\subsection{Structure des données}
+
+Le fichier \texttt{individus\_album\_photo.ttl} contient :
+\begin{itemize}
+    \item \textbf{4 albums} appartenant à différents utilisateurs (Alice, Bob, David)
+    \item \textbf{15 photos} annotées avec métadonnées complètes (photo001 à photo015)
+    \item \textbf{7 personnes} avec relations sociales et familiales
+    \item \textbf{12 lieux} organisés hiérarchiquement (3 pays, 3 régions, 4 villes, 3 monuments, 2 éléments naturels)
+    \item \textbf{5 événements} (anniversaire, mariage, vacances, pendaison de crémaillère, pot de départ)
+    \item \textbf{3 animaux} (chien Max, chat Felix, vache Marguerite)
+\end{itemize}
+
+\subsection{Exemples d'annotations}
+
+Chaque photo répond aux quatre questions fondamentales : qui (personnes), quoi (objets/animaux), où (lieux), quand (dates). La hiérarchie géographique permet des recherches par transitivité.
+
+\subsection{Relations entre personnes}
+
+Les relations sociales et familiales permettent des requêtes comme "photos des amis de Manuel" ou "photos de frères et sœurs ensemble".
+
+\section{Requêtes SPARQL}
+
+Le fichier \texttt{requetes\_sparql.txt} contient 20 requêtes démontrant différentes fonctionnalités.
+
+\subsection{Catégories de requêtes}
+
+\textbf{1. Requêtes simples (Q1-Q3) :}
+\begin{itemize}
+    \item Photos d'une personne spécifique
+    \item Photos de plusieurs personnes ensemble
+    \item Toutes les photos comportant des personnes
+\end{itemize}
+
+\textbf{2. Négation et filtres (Q4, Q8) :}
+\begin{itemize}
+    \item Photos SANS personnes (FILTER NOT EXISTS)
+    \item Photos dans une période donnée (FILTER sur dates)
+\end{itemize}
+
+\textbf{3. Raisonnement OWL (Q5, Q6, Q9, Q16, Q18) :}
+\begin{itemize}
+    \item Photos des amis (propriété symétrique)
+    \item Photos de fêtes (hiérarchie de classes)
+    \item Hiérarchie géographique (propriété transitive)
+    \item Photos de frères/sœurs ensemble
+\end{itemize}
+
+\textbf{4. Agrégation (Q13, Q17) :}
+\begin{itemize}
+    \item Statistiques par album (COUNT, GROUP BY)
+    \item Photos par type
+\end{itemize}
+
+\textbf{5. Requêtes complexes (Q7, Q15) :}
+\begin{itemize}
+    \item Critères multiples avec OPTIONAL
+    \item Combinaison de filtres temporels et spatiaux
+\end{itemize}
+
+\textbf{6. Opérations avancées (Q14, Q19, Q20) :}
+\begin{itemize}
+    \item UNION pour combiner des conditions
+    \item DESCRIBE pour obtenir toutes les informations
+    \item CONSTRUCT pour créer un nouveau graphe
+\end{itemize}
+
+\subsection{Exemple de requête avec raisonnement}
+
+La requête 6 utilise la transitivité de \texttt{rdfs:subClassOf} pour trouver tous les types d'événements qui sont des sous-classes de Party, même indirectement.
+
+\section{Exécution des Requêtes}
+
+\subsection{Outils recommandés}
+
+\textbf{1. Apache Jena avec Fuseki :}
+\begin{itemize}
+    \item Serveur SPARQL complet
+    \item Support du raisonnement OWL
+    \item Interface web pour tester les requêtes
+\end{itemize}
+
+\textbf{2. RDFLib (Python) :} Bibliothèque Python pour manipuler des graphes RDF et exécuter des requêtes SPARQL.
+
+\textbf{3. Protégé :}
+\begin{itemize}
+    \item Éditeur d'ontologies avec interface graphique
+    \item Plugin SPARQL Query
+    \item Raisonneurs intégrés (HermiT, Pellet)
+\end{itemize}
+
+\subsection{Activation du raisonnement}
+
+Pour obtenir les résultats complets avec inférence OWL :
+\begin{enumerate}
+    \item Charger l'ontologie dans un raisonneur (HermiT, Pellet)
+    \item Lancer la classification des instances
+    \item Exécuter les requêtes sur le graphe inféré
+\end{enumerate}
+
+\section{Respect des contraintes OWL 2 DL}
+
+\subsection{Propriétés non-simples}
+
+En OWL 2 DL, il existe des restrictions strictes sur les "propriétés non-simples" (propriétés transitives ou super-propriétés de propriétés transitives). Ces propriétés ne peuvent pas être déclarées :
+\begin{itemize}
+    \item Irréflexives
+    \item Asymétriques
+    \item Fonctionnelles
+    \item Inverses fonctionnelles
+\end{itemize}
+
+\textbf{Choix effectués :}
+\begin{itemize}
+    \item \texttt{isSiblingOf} : Retrait de \texttt{TransitiveProperty} pour conserver \texttt{IrreflexiveProperty}
+    \item \texttt{locatedIn} : Conservé comme \texttt{TransitiveProperty} sans autres caractéristiques incompatibles
+    \item \texttt{email} : Retrait de \texttt{InverseFunctionalProperty} car inapplicable aux Data Properties
+\end{itemize}
+
+\subsection{Validation avec raisonneurs}
+
+L'ontologie a été testée avec plusieurs raisonneurs :
+\begin{itemize}
+    \item \textbf{HermiT} : Raisonneur complet OWL 2 DL (recommandé pour cette ontologie)
+    \item \textbf{ELK} : Raisonneur rapide mais incomplet (ne supporte pas toutes nos contraintes)
+    \item \textbf{Pellet} : Alternative complète à HermiT
+\end{itemize}
+
+\textbf{Résultat :} L'ontologie est \textbf{cohérente} (consistent) avec toutes les contraintes et ne présente aucune incohérence logique après raisonnement.
+
+\section{Points Forts du Projet}
+
+\subsection{Modélisation RDF}
+
+\begin{itemize}
+    \item URIs cohérentes et significatives
+    \item Réutilisation de vocabulaires standards (FOAF, DC)
+    \item Annotations multilingues (français/anglais)
+    \item Types de données appropriés
+\end{itemize}
+
+\subsection{Expressivité OWL}
+
+\begin{itemize}
+    \item Hiérarchies de classes à plusieurs niveaux
+    \item Propriétés symétriques, transitives, inverses, fonctionnelles
+    \item Classes disjointes pour la cohérence
+    \item Domaines et images des propriétés
+    \item Instances bien typées
+\end{itemize}
+
+\subsection{Complexité SPARQL}
+
+\begin{itemize}
+    \item 20 requêtes variées couvrant tous les cas d'usage
+    \item Filtres temporels et logiques
+    \item Négation (FILTER NOT EXISTS)
+    \item Agrégation (COUNT, GROUP BY)
+    \item Opérations ensemblistes (UNION, OPTIONAL)
+    \item Chemins de propriétés
+    \item Requêtes DESCRIBE et CONSTRUCT
+\end{itemize}
+
+\section{Extensions Possibles}
+
+\subsection{Enrichissements de l'ontologie}
+
+\begin{itemize}
+    \item Géolocalisation avec GeoSPARQL
+    \item Métadonnées EXIF (appareil photo, réglages)
+    \item Reconnaissance faciale automatique
+    \item Tags collaboratifs
+    \item Notation et commentaires
+\end{itemize}
+
+\subsection{Intégration avec sources externes}
+
+\begin{itemize}
+    \item DBpedia pour les lieux célèbres
+    \item Wikidata pour les personnes publiques
+    \item GeoNames pour les coordonnées géographiques
+    \item OpenStreetMap pour les cartes
+\end{itemize}
+
+\subsection{Interface utilisateur}
+
+\begin{itemize}
+    \item Application web pour uploader et annoter
+    \item Recherche à facettes
+    \item Visualisation géographique (carte)
+    \item Timeline temporelle
+    \item Graphe de relations sociales
+\end{itemize}
+
+\section{Conclusion}
+
+Ce projet démontre l'utilisation complète des technologies du Web Sémantique pour créer un système d'album photo intelligent. L'ontologie OWL offre une structure riche et extensible, les données RDF permettent des annotations détaillées, et les requêtes SPARQL exploitent le raisonnement pour des recherches sophistiquées.
+
+Les points clés du projet :
+\begin{itemize}
+    \item Ontologie OWL 2 DL complète et cohérente (34 classes, 28 propriétés dont 20 Object Properties et 8 Data Properties)
+    \item Contraintes de cardinalité sur classes principales
+    \item Classes disjointes multiples pour validation logique
+    \item Données réalistes (15 photos, 4 albums, 7 personnes, 12 lieux)
+    \item 22 requêtes SPARQL diversifiées
+    \item Utilisation avancée d'OWL (transitivité, symétrie, asymétrie, irréflexivité, disjonction)
+    \item Réutilisation de vocabulaires standards (FOAF, Dublin Core, Schema.org)
+    \item Respect strict des contraintes OWL 2 DL
+\end{itemize}
+
+Le système est prêt à être étendu avec davantage de données, de nouvelles classes, et des requêtes plus sophistiquées.
+
+\vspace{1cm}
+
+\noindent
+\textbf{Fichiers du projet :}
+\begin{enumerate}
+    \item \texttt{WIP\_ontologie\_album\_photo.ttl} -- L'ontologie OWL 2 DL complète (définitions de classes et propriétés)
+    \item \texttt{individus\_album\_photo.ttl} -- Les instances RDF (personnes, photos, lieux, événements)
+    \item \texttt{WIP\_exemple\_requetes\_sparql.txt} -- Les 22 requêtes SPARQL avec explications
+    \item \texttt{Rapport\_RDDC\_Beyeler\_Luginbuhl.pdf} -- Ce rapport
+\end{enumerate}
+
+\textbf{Note :} Les fichiers ontologie et individus peuvent être chargés séparément dans Protégé ou fusionnés pour l'utilisation avec d'autres outils SPARQL.
+
+\end{document}

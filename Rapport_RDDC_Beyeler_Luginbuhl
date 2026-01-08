@@ -171,12 +171,15 @@ Des contraintes de disjonction ont été définies pour assurer la cohérence de
 \textbf{Propriétés liées aux personnes :}
 \begin{itemize}
     \item \texttt{friendOf} : relation d'amitié (\textbf{symétrique} + \textbf{irréflexive})
-    \item \texttt{isBrotherOf}, \texttt{isSisterOf} : relations fraternelles (\textbf{symétriques})
-    \item \texttt{isSiblingOf} : relation générique (\textbf{symétrique} + \textbf{irréflexive})
+    \item \texttt{isSiblingOf} : relation générique de fratrie (\textbf{symétrique} + \textbf{irréflexive})
+    \begin{itemize}
+        \item \texttt{isBrotherOf} : sous-propriété de \texttt{isSiblingOf} pour relation fraternelle
+        \item \texttt{isSisterOf} : sous-propriété de \texttt{isSiblingOf} pour relation sororale
+    \end{itemize}
     \item \texttt{isParentOf} / \texttt{isChildOf} : relations parent-enfant (\textbf{inverses} + \textbf{asymétrique} + \textbf{irréflexive})
 \end{itemize}
 
-\textbf{Note importante :} La propriété \texttt{isSiblingOf} n'est PAS transitive dans notre ontologie car en OWL 2 DL, une propriété transitive ne peut pas être déclarée irréflexive (contrainte de "propriété simple"). La transitivité a été sacrifiée au profit de l'irréflexivité qui est logiquement plus importante (une personne ne peut pas être son propre frère/sœur).
+\textbf{Note importante :} La propriété \texttt{isSiblingOf} n'est PAS transitive dans notre ontologie car en OWL 2 DL, une propriété transitive ne peut pas être déclarée irréflexive (contrainte de "propriété simple"). La transitivité a été sacrifiée au profit de l'irréflexivité qui est logiquement plus importante (une personne ne peut pas être son propre frère/sœur). Les propriétés \texttt{isBrotherOf} et \texttt{isSisterOf} héritent automatiquement des caractéristiques (symétrie et irréflexivité) de leur super-propriété \texttt{isSiblingOf}.
 
 \textbf{Propriétés géographiques :}
 \begin{itemize}
@@ -274,7 +277,14 @@ Chaque photo répond aux quatre questions fondamentales : qui (personnes), quoi 
 
 \subsection{Relations entre personnes}
 
-Les relations sociales et familiales permettent des requêtes comme "photos des amis de Manuel" ou "photos de frères et sœurs ensemble".
+Les relations sociales et familiales permettent des requêtes complexes :
+\begin{itemize}
+    \item \textbf{Relations d'amitié} : Bob est ami avec David et François, Alice est amie avec Sophie, François est ami avec David
+    \item \textbf{Relations de fratrie} : Bob et Claire sont frères et sœurs (relation définie via \texttt{isSiblingOf}, avec les sous-propriétés \texttt{isBrotherOf} et \texttt{isSisterOf})
+    \item \textbf{Relations parent-enfant} : Alice est parent d'Emma
+\end{itemize}
+
+Ces relations permettent des requêtes comme "lister les amis de Bob" (requête 10) ou "trouver toutes les paires de frères et sœurs" (requête 11).
 
 \section{Requêtes SPARQL}
 
@@ -295,12 +305,12 @@ Le fichier \texttt{requetes\_sparql.txt} contient 20 requêtes démontrant diff�
     \item Photos dans une période donnée (FILTER sur dates)
 \end{itemize}
 
-\textbf{3. Raisonnement OWL (Q5, Q6, Q9, Q16, Q18) :}
+\textbf{3. Raisonnement OWL (Q6, Q9, Q10, Q11) :}
 \begin{itemize}
-    \item Photos des amis (propriété symétrique)
-    \item Photos de fêtes (hiérarchie de classes)
-    \item Hiérarchie géographique (propriété transitive)
-    \item Photos de frères/sœurs ensemble
+    \item Photos de fêtes (hiérarchie de classes avec \texttt{rdfs:subClassOf})
+    \item Hiérarchie géographique (propriété transitive \texttt{locatedIn})
+    \item Lister les amis de Bob (propriété symétrique \texttt{friendOf})
+    \item Trouver les frères et sœurs (propriété symétrique \texttt{isSiblingOf})
 \end{itemize}
 
 \textbf{4. Agrégation (Q13, Q17) :}

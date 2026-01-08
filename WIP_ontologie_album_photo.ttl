@@ -381,19 +381,6 @@
     rdfs:label "ami de" ;
     rdfs:comment "Indique une relation d'amitié entre deux personnes (symétrique et irréflexive)" .
 
-# Relations familiales spécifiques
-:isBrotherOf rdf:type owl:ObjectProperty , owl:SymmetricProperty ;
-    rdfs:domain :Person ;
-    rdfs:range :Person ;
-    rdfs:label "est frère de" ;
-    rdfs:comment "Indique une relation fraternelle" .
-
-:isSisterOf rdf:type owl:ObjectProperty , owl:SymmetricProperty ;
-    rdfs:domain :Person ;
-    rdfs:range :Person ;
-    rdfs:label "est sœur de" ;
-    rdfs:comment "Indique une relation sororale" .
-
 # Relation générique de fratrie (symétrique et irréflexive)
 # Note: La transitivité a été retirée pour respecter OWL 2 DL (une propriété transitive ne peut pas être irréflexive)
 :isSiblingOf rdf:type owl:ObjectProperty , owl:SymmetricProperty , owl:IrreflexiveProperty ;
@@ -402,9 +389,21 @@
     rdfs:label "est frère/sœur de" ;
     rdfs:comment "Indique une relation de fratrie (symétrique et irréflexive: une personne n'est pas son propre frère/sœur)" .
 
-# isBrotherOf et isSisterOf sont des spécialisations de isSiblingOf
-:isBrotherOf rdfs:subPropertyOf :isSiblingOf .
-:isSisterOf rdfs:subPropertyOf :isSiblingOf .
+# Relations familiales spécifiques (sous-propriétés de isSiblingOf)
+# Ces propriétés héritent de la symétrie et de l'irréflexivité de isSiblingOf
+:isBrotherOf rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf :isSiblingOf ;
+    rdfs:domain :Person ;
+    rdfs:range :Person ;
+    rdfs:label "est frère de" ;
+    rdfs:comment "Indique une relation fraternelle (sous-propriété de isSiblingOf)" .
+
+:isSisterOf rdf:type owl:ObjectProperty ;
+    rdfs:subPropertyOf :isSiblingOf ;
+    rdfs:domain :Person ;
+    rdfs:range :Person ;
+    rdfs:label "est sœur de" ;
+    rdfs:comment "Indique une relation sororale (sous-propriété de isSiblingOf)" .
 
 # Relations parent-enfant (inverses l'une de l'autre)
 :isParentOf rdf:type owl:ObjectProperty , owl:AsymmetricProperty , owl:IrreflexiveProperty ;

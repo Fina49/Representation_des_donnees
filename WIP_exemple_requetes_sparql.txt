@@ -2,7 +2,7 @@
 # REQUÊTES SPARQL - ONTOLOGIE ALBUM PHOTO
 # ===============================================
 
-PREFIX : <http://www.semanticweb.org/photoalbum#>
+PREFIX :  <http://www.semanticweb.org/owl/owlapi/turtle#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -18,6 +18,25 @@ WHERE {
 }
 ORDER BY ?date
 
+# Résultats :
+# photo       | title                                    | date
+# ------------|------------------------------------------|-----------------------------------------------
+# Photo 004   | "Mariage d'Alice et David"              | "2023-09-15T16:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 007   | "Le Cervin en hiver"                    | "2024-01-20T09:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 010   | "Felix sur le canapé"                   | "2024-02-14T16:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 008   | "Pendaison de crémaillère Emma"         | "2024-03-12T20:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 009   | "Emma et Alice en famille"              | "2024-04-08T15:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 012   | "Bob et Claire - frère et sœur"         | "2024-05-01T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 005   | "Le Colisée de Rome"                    | "2024-05-22T11:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 003   | "Selfie à Nice"                         | "2024-06-10T14:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 015   | "Coucher de soleil sur Nice"            | "2024-06-10T20:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 006   | "Max à la plage"                        | "2024-07-05T10:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 014   | "Groupe d'amis à Paris"                 | "2024-07-15T18:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 001   | "Tour Eiffel au coucher du soleil"      | "2024-07-15T19:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 013   | "Marguerite dans les Alpes"             | "2024-07-18T11:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 002   | "Anniversaire de Bob - 30 ans"          | "2024-08-20T18:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 011   | "Pot de départ François"                | "2024-09-30T18:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+
 
 # ===============================================
 # REQUÊTE 2 : Trouver toutes les photos prises par Alice
@@ -31,6 +50,14 @@ WHERE {
 }
 ORDER BY ?date
 
+# Résultats :
+# photo       | title                                    | date
+# ------------|------------------------------------------|-----------------------------------------------
+# Photo 012   | "Bob et Claire - frère et sœur"         | "2024-05-01T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 003   | "Selfie à Nice"                         | "2024-06-10T14:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 015   | "Coucher de soleil sur Nice"            | "2024-06-10T20:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 001   | "Tour Eiffel au coucher du soleil"      | "2024-07-15T19:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+
 
 # ===============================================
 # REQUÊTE 3 : Lister toutes les photos de l'album "Vacances été 2024"
@@ -43,6 +70,15 @@ WHERE {
            :inAlbum :albumVacances2024 .
 }
 
+# Résultats :
+# photo       | title                                    | description
+# ------------|------------------------------------------|-----------------------------------------------------------------
+# Photo 006   | "Max à la plage"                        | "Max notre chien joue sur la plage"
+# Photo 013   | "Marguerite dans les Alpes"             | "Une vache dans un pâturage alpin"
+# Photo 015   | "Coucher de soleil sur Nice"            | "Vue panoramique sur la baie de Nice au crépuscule"
+# Photo 014   | "Groupe d'amis à Paris"                 | "Tous les amis devant la Tour Eiffel"
+# Photo 003   | "Selfie à Nice"                         | "Selfie d'Alice et Sophie sur la Promenade des Anglais"
+
 
 # ===============================================
 # REQUÊTE 4 : Trouver toutes les personnes qui apparaissent sur des photos
@@ -54,6 +90,17 @@ WHERE {
     ?person :personName ?name .
 }
 ORDER BY ?name
+
+# Résultats :
+# person              | name
+# --------------------|------------------
+# Alice Dubois        | "Alice Dubois"
+# Bob Martin          | "Bob Martin"
+# Claire Martin       | "Claire Martin"
+# David Leroux        | "David Leroux"
+# Emma Petit          | "Emma Petit"
+# François Bernard    | "François Bernard"
+# Sophie Durand       | "Sophie Durand"
 
 
 # ===============================================
@@ -68,6 +115,14 @@ WHERE {
 GROUP BY ?albumName
 ORDER BY DESC(?nbPhotos)
 
+# Résultats :
+# albumName               | nbPhotos
+# ------------------------|---------------------------------------------------------
+# "Vacances été 2024"    | "5"^^<http://www.w3.org/2001/XMLSchema#integer>
+# "Photos de famille"    | "4"^^<http://www.w3.org/2001/XMLSchema#integer>
+# "Fêtes et événements"  | "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+# "Voyages"              | "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+
 
 # ===============================================
 # REQUÊTE 6 : Trouver les photos prises en France (utilisant la transitivité)
@@ -81,6 +136,16 @@ WHERE {
            :placeName ?placeName .
 }
 
+# Résultats :
+# photo       | title                                    | place                        | placeName
+# ------------|------------------------------------------|------------------------------|----------------------------
+# Photo 003   | "Selfie à Nice"                         | Promenade des Anglais        | "Promenade des Anglais"
+# Photo 015   | "Coucher de soleil sur Nice"            | Nice                         | "Nice"
+# Photo 006   | "Max à la plage"                        | Plage de la Côte d'Azur      | "Plage de la Côte d'Azur"
+# Photo 001   | "Tour Eiffel au coucher du soleil"      | Tour Eiffel                  | "Tour Eiffel"
+# Photo 014   | "Groupe d'amis à Paris"                 | Tour Eiffel                  | "Tour Eiffel"
+# Photo 004   | "Mariage d'Alice et David"              | Paris                        | "Paris"
+
 
 # ===============================================
 # REQUÊTE 7 : Lister les photos avec des animaux
@@ -92,6 +157,13 @@ WHERE {
            :depictsAnimal ?animal .
     ?animal rdfs:label ?animalLabel .
 }
+
+# Résultats :
+# photo       | title                                    | animal                  | animalLabel
+# ------------|------------------------------------------|-------------------------|-------------------------
+# Photo 013   | "Marguerite dans les Alpes"             | Marguerite la vache     | "Marguerite la vache"
+# Photo 006   | "Max à la plage"                        | Max le chien            | "Max le chien"
+# Photo 010   | "Felix sur le canapé"                   | Felix le chat           | "Felix le chat"
 
 
 # ===============================================
@@ -110,6 +182,14 @@ WHERE {
 }
 ORDER BY ?date
 
+# Résultats :
+# photo       | title                                    | date                                                           | place
+# ------------|------------------------------------------|----------------------------------------------------------------|-----------------
+# Photo 007   | "Le Cervin en hiver"                    | "2024-01-20T09:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | Zermatt
+# Photo 005   | "Le Colisée de Rome"                    | "2024-05-22T11:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | Colisée
+# Photo 015   | "Coucher de soleil sur Nice"            | "2024-06-10T20:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | Nice
+# Photo 001   | "Tour Eiffel au coucher du soleil"      | "2024-07-15T19:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | Tour Eiffel
+
 
 # ===============================================
 # REQUÊTE 9 : Trouver les photos prises lors d'événements de type "Fête"
@@ -123,6 +203,13 @@ WHERE {
            rdfs:label ?eventLabel .
 }
 
+# Résultats :
+# photo       | title                                    | event                           | eventLabel
+# ------------|------------------------------------------|---------------------------------|----------------------------------
+# Photo 008   | "Pendaison de crémaillère Emma"         | Pendaison de crémaillère Emma   | "Pendaison de crémaillère Emma"
+# Photo 002   | "Anniversaire de Bob - 30 ans"          | Anniversaire de Bob             | "Anniversaire de Bob"
+# Photo 011   | "Pot de départ François"                | Pot de départ François          | "Pot de départ François"
+
 
 # ===============================================
 # REQUÊTE 10 : Lister les amis de Bob
@@ -132,6 +219,12 @@ WHERE {
     :bob :friendOf ?friend .
     ?friend :personName ?name .
 }
+
+# Résultats :
+# friend      | name
+# ------------|------------------
+# :david      | "David Leroux"
+# :francois   | "François Bernard"
 
 
 # ===============================================
@@ -144,6 +237,11 @@ WHERE {
     ?person2 :personName ?name2 .
     FILTER(?person1 < ?person2)
 }
+
+# Résultats :
+# person1     | name1          | person2     | name2
+# ------------|----------------|-------------|----------------
+# :bob        | "Bob Martin"   | :claire     | "Claire Martin"
 
 
 # ===============================================
@@ -158,6 +256,17 @@ WHERE {
 GROUP BY ?photographer ?name
 ORDER BY DESC(?nbPhotos)
 
+# Résultats :
+# photographer | name              | nbPhotos
+# -------------|-------------------|--------------------------------------------------------
+# :alice       | "Alice Dubois"    | "4"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :bob         | "Bob Martin"      | "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :david       | "David Leroux"    | "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :claire      | "Claire Martin"   | "2"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :emma        | "Emma Petit"      | "1"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :francois    | "François Bernard"| "1"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :sophie      | "Sophie Durand"   | "1"^^<http://www.w3.org/2001/XMLSchema#integer>
+
 
 # ===============================================
 # REQUÊTE 13 : Trouver les photos prises en 2024
@@ -171,6 +280,24 @@ WHERE {
 }
 ORDER BY ?date
 
+# Résultats :
+# photo       | title                                    | date
+# ------------|------------------------------------------|-----------------------------------------------
+# Photo 007   | "Le Cervin en hiver"                    | "2024-01-20T09:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 010   | "Felix sur le canapé"                   | "2024-02-14T16:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 008   | "Pendaison de crémaillère Emma"         | "2024-03-12T20:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 009   | "Emma et Alice en famille"              | "2024-04-08T15:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 012   | "Bob et Claire - frère et sœur"         | "2024-05-01T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 005   | "Le Colisée de Rome"                    | "2024-05-22T11:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 003   | "Selfie à Nice"                         | "2024-06-10T14:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 015   | "Coucher de soleil sur Nice"            | "2024-06-10T20:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 006   | "Max à la plage"                        | "2024-07-05T10:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 014   | "Groupe d'amis à Paris"                 | "2024-07-15T18:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 001   | "Tour Eiffel au coucher du soleil"      | "2024-07-15T19:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 013   | "Marguerite dans les Alpes"             | "2024-07-18T11:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 002   | "Anniversaire de Bob - 30 ans"          | "2024-08-20T18:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 011   | "Pot de départ François"                | "2024-09-30T18:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+
 
 # ===============================================
 # REQUÊTE 14 : Lister les albums avec leur propriétaire
@@ -182,6 +309,14 @@ WHERE {
            :ownedBy ?owner .
     ?owner :personName ?ownerName .
 }
+
+# Résultats :
+# album                 | albumName               | owner    | ownerName
+# ----------------------|-------------------------|----------|------------------
+# :albumVacances2024    | "Vacances été 2024"    | :alice   | "Alice Dubois"
+# :albumFamille         | "Photos de famille"    | :alice   | "Alice Dubois"
+# :albumFetes           | "Fêtes et événements"  | :bob     | "Bob Martin"
+# :albumVoyages         | "Voyages"              | :david   | "David Leroux"
 
 
 # ===============================================
@@ -196,6 +331,13 @@ WHERE {
            :depictsPerson :emma .
 }
 
+# Résultats :
+# photo       | title                                    | date
+# ------------|------------------------------------------|-----------------------------------------------
+# Photo 008   | "Pendaison de crémaillère Emma"         | "2024-03-12T20:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 009   | "Emma et Alice en famille"              | "2024-04-08T15:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+# Photo 014   | "Groupe d'amis à Paris"                 | "2024-07-15T18:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+
 
 # ===============================================
 # REQUÊTE 16 : Lister les lieux de type "Monument" (Landmark)
@@ -207,6 +349,13 @@ WHERE {
               :locatedIn ?city .
     ?city :placeName ?cityName .
 }
+
+# Résultats :
+# landmark              | name                       | city     | cityName
+# ----------------------|----------------------------|----------|--------------
+# :tourEiffel           | "Tour Eiffel"             | :paris   | "Paris"
+# :colisee              | "Colisée"                 | :rome    | "Rome"
+# :promenadeDesAnglais  | "Promenade des Anglais"   | :nice    | "Nice"
 
 
 # ===============================================
@@ -221,6 +370,11 @@ WHERE {
     ?event rdf:type :Wedding .
 }
 
+# Résultats :
+# photo       | title                                    | date                                                           | event
+# ------------|------------------------------------------|----------------------------------------------------------------|----------------------
+# Photo 004   | "Mariage d'Alice et David"              | "2023-09-15T16:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | :mariageAliceDavid
+
 
 # ===============================================
 # REQUÊTE 18 : Compter combien de fois chaque personne apparaît sur des photos
@@ -234,6 +388,17 @@ WHERE {
 GROUP BY ?person ?name
 ORDER BY DESC(?nbApparitions)
 
+# Résultats :
+# person      | name              | nbApparitions
+# ------------|-------------------|--------------------------------------------------------
+# :alice      | "Alice Dubois"    | "5"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :bob        | "Bob Martin"      | "5"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :david      | "David Leroux"    | "4"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :emma       | "Emma Petit"      | "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :claire     | "Claire Martin"   | "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :francois   | "François Bernard"| "3"^^<http://www.w3.org/2001/XMLSchema#integer>
+# :sophie     | "Sophie Durand"   | "2"^^<http://www.w3.org/2001/XMLSchema#integer>
+
 
 # ===============================================
 # REQUÊTE 19 : Trouver toutes les relations parent-enfant
@@ -244,6 +409,11 @@ WHERE {
             :personName ?parentName .
     ?child :personName ?childName .
 }
+
+# Résultats :
+# parent      | parentName        | child    | childName
+# ------------|-------------------|----------|--------------
+# :alice      | "Alice Dubois"    | :emma    | "Emma Petit"
 
 
 # ===============================================
@@ -257,6 +427,12 @@ WHERE {
            :depictsPerson ?person .
     ?person :personName ?personName .
 }
+
+# Résultats :
+# photo       | title                                    | person   | personName
+# ------------|------------------------------------------|----------|-----------------
+# Photo 003   | "Selfie à Nice"                         | :alice   | "Alice Dubois"
+# Photo 003   | "Selfie à Nice"                         | :sophie  | "Sophie Durand"
 
 
 # ===============================================
@@ -272,6 +448,11 @@ WHERE {
     ?album rdf:type :Album .
     ?place rdf:type :Place .
 }
+
+# Résultats :
+# totalPhotos                                     | totalPersons                                    | totalAlbums                                     | totalPlaces
+# ------------------------------------------------|-------------------------------------------------|-------------------------------------------------|---------------------------------------------------
+# "15"^^<http://www.w3.org/2001/XMLSchema#integer> | "7"^^<http://www.w3.org/2001/XMLSchema#integer> | "4"^^<http://www.w3.org/2001/XMLSchema#integer> | "13"^^<http://www.w3.org/2001/XMLSchema#integer>
 
 
 # ===============================================
@@ -294,3 +475,22 @@ WHERE {
 }
 GROUP BY ?photo ?title ?date ?placeName
 ORDER BY ?date
+
+# Résultats :
+# photo       | title                                    | date                                                           | placeName                | persons
+# ------------|------------------------------------------|----------------------------------------------------------------|--------------------------|--------------------------------------------------
+# Photo 004   | "Mariage d'Alice et David"              | "2023-09-15T16:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Paris"                 | "Alice Dubois, David Leroux"
+# Photo 007   | "Le Cervin en hiver"                    | "2024-01-20T09:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Zermatt"               |
+# Photo 010   | "Felix sur le canapé"                   | "2024-02-14T16:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> |                          |
+# Photo 008   | "Pendaison de crémaillère Emma"         | "2024-03-12T20:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> |                          | "Alice Dubois, Bob Martin, Claire Martin, Emma Petit, Sophie Durand"
+# Photo 009   | "Emma et Alice en famille"              | "2024-04-08T15:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> |                          | "Alice Dubois, Emma Petit"
+# Photo 012   | "Bob et Claire - frère et sœur"         | "2024-05-01T14:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> |                          | "Bob Martin, Claire Martin"
+# Photo 005   | "Le Colisée de Rome"                    | "2024-05-22T11:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Colisée"               |
+# Photo 003   | "Selfie à Nice"                         | "2024-06-10T14:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Promenade des Anglais" | "Alice Dubois, Sophie Durand"
+# Photo 015   | "Coucher de soleil sur Nice"            | "2024-06-10T20:45:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Nice"                  |
+# Photo 006   | "Max à la plage"                        | "2024-07-05T10:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Plage de la Côte d'Azur"|
+# Photo 014   | "Groupe d'amis à Paris"                 | "2024-07-15T18:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Tour Eiffel"           | "Alice Dubois, Bob Martin, David Leroux, Emma Petit, François Bernard"
+# Photo 001   | "Tour Eiffel au coucher du soleil"      | "2024-07-15T19:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Tour Eiffel"           |
+# Photo 013   | "Marguerite dans les Alpes"             | "2024-07-18T11:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> | "Zermatt"               |
+# Photo 002   | "Anniversaire de Bob - 30 ans"          | "2024-08-20T18:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> |                          | "Bob Martin, Claire Martin, David Leroux, François Bernard"
+# Photo 011   | "Pot de départ François"                | "2024-09-30T18:30:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> |                          | "Bob Martin, David Leroux, François Bernard"
